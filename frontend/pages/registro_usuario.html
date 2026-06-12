@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SmartWatt Diagnostics — Registro</title>
+
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+
+<body>
+
+  <div class="login-wrapper">
+
+    <div class="login-card">
+
+      <div class="login-logo">
+
+        <img src="/img/SmartWatt.png"
+             alt="Logo SmartWattDiagnostics"
+             class="logo-img">
+
+        <h1>Registrar usuario</h1>
+
+        <p>
+          SmartWattDiagnostics
+        </p>
+
+      </div>
+
+      <!-- Contenedor utilizado para mostrar mensajes de éxito o error
+           después de intentar registrar un usuario -->
+      <div class="alerta alerta-exito" id="mensaje"></div>
+
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+
+        <input type="text"
+               id="nombre"
+               class="form-control"
+               placeholder="Ingresa el nombre">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Usuario</label>
+
+        <input type="text"
+               id="usuario"
+               class="form-control"
+               placeholder="Ingresa el usuario">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+
+        <input type="password"
+               id="contrasena"
+               class="form-control"
+               placeholder="Ingresa la contraseña">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Rol</label>
+
+        <select id="rol" class="form-control">
+
+          <!-- Los roles determinan las funciones disponibles
+               para cada usuario dentro del sistema -->
+          <option value="ingeniero">
+            Ingeniero de control energético
+          </option>
+
+          <option value="tecnico">
+            Técnico de monitoreo
+          </option>
+
+        </select>
+      </div>
+
+      <button class="btn btn-verde"
+              style="width:100%; justify-content:center; margin-top:8px;"
+              onclick="registrarUsuario()">
+
+        Guardar usuario
+
+      </button>
+
+      <button class="btn btn-outline"
+              style="width:100%; justify-content:center; margin-top:10px;"
+              onclick="window.location.href='/'">
+
+        Volver al inicio
+
+      </button>
+
+      <p style="font-size:11px; color:#9CA3AF; text-align:center; margin-top:20px;">
+
+        Sistema de Control Energético Empresarial v1.0
+
+      </p>
+
+    </div>
+
+  </div>
+  
+  <script src="/scripts/utils.js"></script>
+  <script>
+
+    async function registrarUsuario() {
+
+      // Recolectar los datos capturados en el formulario
+      // para enviarlos al backend.
+      const data = {
+
+        nombre: document.getElementById('nombre').value,
+
+        usuario: document.getElementById('usuario').value,
+
+        contrasena: document.getElementById('contrasena').value,
+
+        rol: document.getElementById('rol').value
+
+      };
+
+      // Enviar la información del nuevo usuario mediante
+      // una petición POST a la API.
+      const res = await fetch('/api/usuarios', {
+
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify(data)
+
+      });
+
+      const json = await res.json();
+
+      const mensaje = document.getElementById('mensaje');
+
+      // Mostrar la respuesta recibida para informar
+      // al usuario el resultado de la operación.
+      mensaje.classList.add('visible');
+
+      mensaje.innerText = json.mensaje;
+    }
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartWatt Diagnostics — Acceso</title>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-logo">
+
+      <img src="/img/SmartWatt.png"
+           alt="Logo SmartWattDiagnostics"
+           class="logo-img">
+
+  <h1>SmartWattDiagnostics</h1>
+
+  <p>
+    Monitoreo y análisis de consumo energético
+  </p>
+
+</div>
+
+      <!-- Área utilizada para mostrar mensajes de error
+           durante el proceso de autenticación -->
+      <div class="alerta alerta-error" id="mensajeError"></div>
+
+      <div class="form-group">
+        <label class="form-label">Usuario</label>
+
+        <input type="text"
+               id="usuario"
+               class="form-control"
+               placeholder="Ingresa tu usuario"
+               autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+
+        <input type="password"
+               id="contrasena"
+               class="form-control"
+               placeholder="Ingresa tu contraseña"
+               autocomplete="current-password">
+      </div>
+
+      <!-- Ejecuta el proceso de validación de credenciales
+           definido en el archivo auth.js -->
+      <button class="btn btn-primario"
+              style="width:100%; justify-content:center; margin-top:8px;"
+              onclick="iniciarSesion()">
+
+        Iniciar sesión
+
+      </button>
+
+      <!-- Permite acceder al formulario de registro
+           para crear nuevas cuentas dentro del sistema -->
+      <button class="btn btn-outline" 
+        style="width:100%; justify-content:center; margin-top:10px;"
+        onclick="window.location.href='/pages/registro_usuario.html'">
+
+        Registrar usuario
+
+      </button>
+
+      <p style="font-size:11px; color:#9CA3AF; text-align:center; margin-top:20px;">
+
+        Sistema de Control Energético Empresarial v1.0
+
+      </p>
+
+    </div>
+  </div>
+
+  <!-- Archivo encargado de gestionar la autenticación
+       y el acceso de usuarios al sistema -->
+  <script src="/scripts/auth.js"></script>
+
+</body>
+</html>
