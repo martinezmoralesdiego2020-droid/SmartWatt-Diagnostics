@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <!-- Define la codificación de caracteres utilizada en la página. -->
+  <meta charset="UTF-8">
+
+  <!-- Permite que la interfaz se adapte correctamente a distintos tamaños de pantalla. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Título mostrado en la pestaña del navegador. -->
+  <title>SmartWatt Diagnostics — Registro consumo</title>
+
+
+  <!-- Hoja de estilos principal del sistema. -->
+  <link rel="stylesheet" href="/styles/main.css">
+
+</head>
+
+
+<body>
+
+
+  <!-- Barra lateral de navegación del usuario técnico. -->
+  <aside class="sidebar">
+
+
+    <!-- Sección que contiene la identidad del sistema y el rol actual. -->
+    <div class="sidebar-logo">
+
+      <!-- Nombre del sistema. -->
+      <h2>⚡ SMARTWATT</h2>
+
+      <!-- Rol del usuario que utiliza este módulo. -->
+      <p>Técnico de monitoreo</p>
+
+    </div>
+
+
+
+    <!-- Menú de navegación disponible para técnicos. -->
+    <nav class="sidebar-nav">
+
+
+      <!-- Acceso al módulo de registro de consumo energético. -->
+      <a href="/pages/registro_consumo.html" class="nav-item activo">
+        <span class="nav-icon">📝</span>
+        Registro consumo
+      </a>
+
+
+      <!-- Acceso al módulo para reportar incidencias. -->
+      <a href="/pages/registro_incidencias.html" class="nav-item">
+        <span class="nav-icon">⚠️</span>
+        Reportar incidencia
+      </a>
+
+
+      <!-- Acceso al módulo de consulta de equipos. -->
+      <a href="/pages/consulta_equipos.html" class="nav-item">
+        <span class="nav-icon">🔎</span>
+        Consulta equipos
+      </a>
+
+
+    </nav>
+
+
+
+    <!-- Sección inferior con información del usuario y cierre de sesión. -->
+    <div style="padding:16px 20px; border-top:1px solid rgba(255,255,255,0.08);">
+
+
+      <!-- Elemento donde se muestra el nombre del usuario autenticado. -->
+      <p id="usuarioNombre"
+         style="font-size:12px; color:rgba(255,255,255,0.55); margin-bottom:8px;"></p>
+
+
+      <!-- Botón encargado de cerrar la sesión actual. -->
+      <a href="#" class="nav-item" onclick="cerrarSesion()">
+        <span class="nav-icon">🚪</span>
+        Cerrar sesión
+      </a>
+
+
+    </div>
+
+
+  </aside>
+
+
+
+
+  <!-- Contenido principal del módulo de registro. -->
+  <main class="main-content">
+
+
+    <!-- Encabezado de la página. -->
+    <div class="page-header">
+
+
+      <div>
+
+        <!-- Título principal del módulo. -->
+        <h1 class="page-title">Registro de consumo</h1>
+
+
+        <!-- Descripción del objetivo de la sección. -->
+        <p class="page-subtitle">
+          Captura de lecturas energéticas de equipos
+        </p>
+
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- Contenedor donde se muestran mensajes de operación. -->
+    <div class="alerta" id="alertaConsumo"></div>
+
+
+
+
+    <!-- Formulario para capturar un nuevo consumo energético. -->
+    <div class="card" style="max-width:560px;">
+
+
+      <!-- Título del formulario. -->
+      <div class="card-titulo">
+        ⚡ Nuevo registro de consumo
+      </div>
+
+
+
+      <!-- Campo para seleccionar el equipo relacionado al consumo. -->
+      <div class="form-group">
+
+        <label class="form-label">Equipo *</label>
+
+        <select id="consumoEquipoId" class="form-control">
+
+          <!-- Se llena dinámicamente mediante JavaScript. -->
+          <option value="">Cargando equipos…</option>
+
+        </select>
+
+      </div>
+
+
+
+      <!-- Campo para ingresar la cantidad de energía consumida. -->
+      <div class="form-group">
+
+        <label class="form-label">kWh consumidos *</label>
+
+        <input type="number" id="consumoKwh" class="form-control" placeholder="Ej: 12.5">
+
+      </div>
+
+
+
+      <!-- Campo opcional para registrar voltaje medido. -->
+      <div class="form-group">
+
+        <label class="form-label">Voltaje</label>
+
+        <input type="number" id="consumoVoltaje" class="form-control" placeholder="Ej: 220">
+
+      </div>
+
+
+
+      <!-- Campo opcional para registrar corriente eléctrica. -->
+      <div class="form-group">
+
+        <label class="form-label">Corriente</label>
+
+        <input type="number" id="consumoCorriente" class="form-control" placeholder="Ej: 5.2">
+
+      </div>
+
+
+
+      <!-- Campo opcional para registrar factor de potencia. -->
+      <div class="form-group">
+
+        <label class="form-label">Factor de potencia</label>
+
+        <input type="number" id="consumoFP" class="form-control" step="0.01" placeholder="0 - 1">
+
+      </div>
+
+
+
+      <!-- Botón encargado de enviar el registro al servidor. -->
+      <button class="btn btn-verde"
+              style="width:100%; justify-content:center;"
+              onclick="guardarConsumo()">
+
+        💾 Guardar consumo
+
+      </button>
+
+
+    </div>
+
+
+  </main>
+
+
+
+  <!-- Archivo JavaScript con funciones generales del sistema. -->
+  <script src="/scripts/utils.js"></script>
+
+
+  <script>
+
+
+    // Ejecuta las acciones iniciales cuando la página termina de cargar.
+    document.addEventListener('DOMContentLoaded', () => {
+
+
+      // Verifica que exista un usuario autenticado.
+      if (!localStorage.getItem('usuario_id')) {
+
+        // Redirige al inicio de sesión si no existe una sesión activa.
+        window.location.href = '/';
+
+        return;
+
+      }
+
+
+
+      // Muestra el nombre del usuario conectado.
+      document.getElementById('usuarioNombre').textContent =
+        localStorage.getItem('usuario_nombre') || '';
+
+
+
+      // Obtiene la lista de equipos disponibles.
+      cargarEquipos();
+
+
+    });
+
+
+
+
+    // Obtiene los equipos registrados para llenar el selector.
+    async function cargarEquipos() {
+
+
+      try {
+
+
+        // Solicita al servidor la lista de equipos.
+        const res = await fetch('/api/equipos');
+
+
+        // Convierte la respuesta a formato JSON.
+        const lista = await res.json();
+
+
+
+        // Obtiene el elemento selector del formulario.
+        const sel = document.getElementById('consumoEquipoId');
+
+
+
+        // Construye dinámicamente las opciones disponibles.
+        sel.innerHTML =
+          '<option value="">Selecciona un equipo…</option>' +
+          lista.map(e =>
+            `<option value="${e.id}">${e.nombre} — ${e.ubicacion}</option>`
+          ).join('');
+
+
+
+      } catch (err) {
+
+
+        // Muestra errores ocurridos durante la carga de equipos.
+        console.error(err);
+
+
+      }
+
+
+    }
+
+
+
+
+    // Registra un nuevo consumo energético.
+    async function guardarConsumo() {
+
+
+
+      // Obtiene los valores ingresados en el formulario.
+      const equipo_id = document.getElementById('consumoEquipoId').value;
+      const kwh       = document.getElementById('consumoKwh').value;
+      const voltaje   = document.getElementById('consumoVoltaje').value;
+      const corriente = document.getElementById('consumoCorriente').value;
+      const fp        = document.getElementById('consumoFP').value;
+
+
+
+      // Verifica que los campos obligatorios tengan información.
+      if (!equipo_id || !kwh) {
+
+        mostrar('Completa los campos obligatorios', 'error');
+
+        return;
+
+      }
+
+
+
+
+      try {
+
+
+
+        // Envía la información del consumo al servidor mediante POST.
+        const res = await fetch('/api/consumo', {
+
+          method: 'POST',
+
+          headers: {'Content-Type': 'application/json'},
+
+
+          // Convierte los datos del formulario a formato JSON.
+          body: JSON.stringify({
+
+            equipo_id: parseInt(equipo_id),
+
+            kwh_consumidos: parseFloat(kwh),
+
+            voltaje: parseFloat(voltaje) || null,
+
+            corriente: parseFloat(corriente) || null,
+
+            factor_potencia: parseFloat(fp) || null,
+
+            tecnico_id: parseInt(localStorage.getItem('usuario_id'))
+
+          })
+
+        });
+
+
+
+        // Obtiene la respuesta del servidor.
+        const data = await res.json();
+
+
+
+
+        // Verifica si el registro fue exitoso.
+        if (data.exito) {
+
+
+          mostrar('✔ Consumo registrado', 'exito');
+
+
+          // Limpia el formulario después del registro.
+          limpiar();
+
+
+        } else {
+
+
+          mostrar(data.mensaje || 'No se puede registrar consumo', 'error');
+
+
+        }
+
+
+
+
+      } catch (err) {
+
+
+        // Muestra un mensaje cuando ocurre un error de conexión.
+        mostrar('Error de conexión', 'error');
+
+
+      }
+
+
+    }
+
+
+
+
+    // Limpia todos los campos del formulario.
+    function limpiar() {
+
+
+      document.getElementById('consumoEquipoId').value = '';
+
+      document.getElementById('consumoKwh').value = '';
+
+      document.getElementById('consumoVoltaje').value = '';
+
+      document.getElementById('consumoCorriente').value = '';
+
+      document.getElementById('consumoFP').value = '';
+
+
+    }
+
+
+
+
+
+    // Muestra mensajes de información, error o éxito en pantalla.
+    function mostrar(msg, tipo) {
+
+
+      // Obtiene el contenedor de mensajes.
+      const div = document.getElementById('alertaConsumo');
+
+
+      // Asigna el texto del mensaje.
+      div.textContent = msg;
+
+
+      // Cambia las clases según el tipo de mensaje recibido.
+      div.className = `alerta alerta-${tipo} visible`;
+
+
+
+      // Oculta el mensaje después de unos segundos.
+      setTimeout(() => div.classList.remove('visible'), 4000);
+
+
+    }
+
+
+
+
+
+    // Cierra la sesión del usuario actual.
+    function cerrarSesion() {
+
+
+      // Elimina los datos almacenados de la sesión.
+      localStorage.clear();
+
+
+      // Redirige a la página inicial.
+      window.location.href = '/';
+
+
+    }
+
+
+  </script>
+
+
+</body>
+</html>

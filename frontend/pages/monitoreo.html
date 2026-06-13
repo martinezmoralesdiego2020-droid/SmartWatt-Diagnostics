@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <!-- Define la codificación de caracteres utilizada en la página. -->
+  <meta charset="UTF-8">
+
+  <!-- Permite la adaptación del diseño a diferentes tamaños de pantalla. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Título mostrado en la pestaña del navegador. -->
+  <title>SmartWatt Diagnostics — Monitoreo</title>
+
+
+  <!-- Archivo principal de estilos del sistema. -->
+  <link rel="stylesheet" href="/styles/main.css">
+
+</head>
+
+
+<body>
+
+
+
+  <!-- Barra lateral de navegación para el ingeniero de control energético. -->
+  <aside class="sidebar">
+
+
+    <!-- Sección con la identidad del sistema y rol del usuario. -->
+    <div class="sidebar-logo">
+
+      <!-- Nombre de la aplicación. -->
+      <h2>⚡ SMARTWATT</h2>
+
+      <!-- Rol asociado a la interfaz actual. -->
+      <p>Ingeniero de Control Energético</p>
+
+    </div>
+
+
+
+
+    <!-- Menú principal de navegación entre módulos. -->
+    <nav class="sidebar-nav">
+
+
+      <!-- Acceso al panel principal del sistema. -->
+      <a href="/pages/dashboard.html"    class="nav-item activo">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+
+
+      <!-- Acceso a la administración de equipos eléctricos. -->
+      <a href="/pages/equipos.html"      class="nav-item">
+        <span class="nav-icon">⚙️</span> Equipos eléctricos
+      </a>
+
+
+      <!-- Acceso al módulo de monitoreo energético. -->
+      <a href="/pages/monitoreo.html"    class="nav-item">
+        <span class="nav-icon">📈</span> Monitoreo energético
+      </a>
+
+
+      <!-- Acceso al diagnóstico inteligente de equipos. -->
+      <a href="/pages/diagnostico.html"  class="nav-item">
+        <span class="nav-icon">🔍</span> Diagnóstico inteligente
+      </a>
+
+
+      <!-- Acceso al apartado de reportes técnicos. -->
+      <a href="/pages/reportes.html"     class="nav-item">
+        <span class="nav-icon">📋</span> Reportes técnicos
+      </a>
+
+
+    </nav>
+
+
+
+
+    <!-- Sección inferior con usuario actual y cierre de sesión. -->
+    <div style="padding:16px 20px; border-top:1px solid rgba(255,255,255,0.08);">
+
+
+      <!-- Muestra el nombre del usuario autenticado. -->
+      <p id="usuarioNombre"
+         style="font-size:12px; color:rgba(255,255,255,0.55); margin-bottom:8px;"></p>
+
+
+      <!-- Ejecuta el cierre de sesión del usuario. -->
+      <a href="#" class="nav-item" onclick="cerrarSesion()">
+        <span class="nav-icon">🚪</span> Cerrar sesión
+      </a>
+
+
+    </div>
+
+
+  </aside>
+
+
+
+
+
+  <!-- Área principal del contenido de monitoreo. -->
+  <main class="main-content">
+
+
+
+    <!-- Encabezado del módulo. -->
+    <div class="page-header">
+
+
+      <div>
+
+        <!-- Título principal de la página. -->
+        <h1 class="page-title">Monitoreo de consumo</h1>
+
+
+        <!-- Descripción del objetivo del módulo. -->
+        <p class="page-subtitle">Últimos registros en tiempo real</p>
+
+
+      </div>
+
+
+
+
+      <!-- Selector utilizado para filtrar información por equipo. -->
+      <select id="selector-equipo" class="form-control" style="width:220px;"
+              onchange="filtrarPorEquipo()">
+
+      </select>
+
+
+    </div>
+
+
+
+
+    <!-- Contenedor utilizado para mostrar mensajes del sistema. -->
+    <div class="alerta" id="alertaMonitoreo"></div>
+
+
+
+
+
+    <!-- Tarjetas con indicadores principales del monitoreo. -->
+    <div class="kpi-grid">
+
+
+      <!-- Muestra la información del último consumo registrado. -->
+      <div class="kpi-card verde">
+
+
+        <!-- Nombre del indicador. -->
+        <div class="kpi-label">Último registro</div>
+
+
+        <!-- Valor del último consumo registrado. -->
+        <div class="kpi-valor" id="kpiUltimoKwh">—</div>
+
+
+        <!-- Equipo asociado al último registro. -->
+        <div class="kpi-descripcion" id="kpiUltimoEquipo">—</div>
+
+
+      </div>
+
+
+
+
+      <!-- Muestra la cantidad de registros realizados durante el día. -->
+      <div class="kpi-card azul">
+
+
+        <div class="kpi-label">Registros hoy</div>
+
+
+        <div class="kpi-valor" id="kpiRegistrosHoy">0</div>
+
+
+      </div>
+
+
+
+
+      <!-- Muestra el promedio de consumo registrado durante el día. -->
+      <div class="kpi-card amarillo">
+
+
+        <div class="kpi-label">Promedio hoy</div>
+
+
+        <div class="kpi-valor" id="kpiPromedioHoy">0</div>
+
+
+      </div>
+
+
+    </div>
+
+
+
+
+
+    <!-- Controles adicionales del módulo. -->
+    <div style="display:flex; gap:10px; margin-bottom:16px;">
+
+
+
+      <!-- Botón para actualizar manualmente los datos mostrados. -->
+      <button class="btn btn-outline" onclick="cargarHistorialConsumo()">
+
+        🔃 Recargar
+
+      </button>
+
+
+
+      <!-- Muestra la fecha y hora de la última actualización. -->
+      <div id="ts-monitoreo" style="font-size:12px; color:#9CA3AF; margin-left:auto;"></div>
+
+
+    </div>
+
+
+
+
+
+    <!-- Sección donde se representa gráficamente el consumo energético. -->
+    <div class="card">
+
+
+      <!-- Título de la gráfica. -->
+      <div class="card-titulo">📊 Tendencia de consumo</div>
+
+
+      <!-- Elemento utilizado por Chart.js para dibujar la gráfica. -->
+      <canvas id="graficaMonitoreo"></canvas>
+
+
+    </div>
+
+
+
+
+
+    <!-- Tabla donde se muestran los registros recientes de consumo. -->
+    <div class="card" id="tabla-consumo-wrapper">
+
+
+      <!-- Título de la tabla. -->
+      <div class="card-titulo">📋 Registros recientes</div>
+
+
+
+      <table class="tabla-moderna">
+
+
+        <!-- Encabezado de columnas de la tabla. -->
+        <thead>
+
+          <tr>
+
+            <th>#</th>
+
+            <th>Equipo</th>
+
+            <th style="text-align:right;">kWh</th>
+
+            <th style="text-align:right;">Voltaje</th>
+
+            <th style="text-align:right;">Corriente</th>
+
+            <th style="text-align:right;">FP</th>
+
+            <th>Fecha</th>
+
+
+          </tr>
+
+        </thead>
+
+
+
+
+        <!-- Cuerpo donde JavaScript insertará los registros obtenidos. -->
+        <tbody id="tablaConsumoCuerpo">
+
+
+          <!-- Mensaje inicial mientras se cargan los datos. -->
+          <tr>
+
+            <td colspan="7" style="text-align:center; padding:24px;">
+
+              Cargando...
+
+            </td>
+
+
+          </tr>
+
+
+        </tbody>
+
+
+      </table>
+
+
+    </div>
+
+
+
+  </main>
+
+
+
+
+
+  <!-- Librería con funciones generales utilizadas por el sistema. -->
+  <script src="/scripts/utils.js"></script>
+
+
+
+  <!-- Librería externa utilizada para generar gráficas estadísticas. -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+  <!-- Script encargado de controlar la lógica del monitoreo energético. -->
+  <script src="/scripts/consumo.js"></script>
+
+
+
+</body>
+
+</html>
