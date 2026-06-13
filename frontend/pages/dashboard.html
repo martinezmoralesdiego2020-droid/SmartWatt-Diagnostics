@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- Define la codificación de caracteres para soportar acentos y caracteres especiales -->
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Permite diseño responsivo en dispositivos móviles -->
+
+  <title>SmartWatt Diagnostics — Dashboard</title>
+  <!-- Título de la página que aparece en la pestaña del navegador -->
+
+  <link rel="stylesheet" href="/styles/main.css">
+  <!-- Enlace a la hoja de estilos principal del sistema -->
+</head>
+
+<body>
+
+  <!-- ── SIDEBAR ───────────────────────────────────── -->
+  <!-- Barra lateral de navegación principal del sistema -->
+  <aside class="sidebar">
+
+    <div class="sidebar-logo">
+      <!-- Sección de logotipo y nombre del sistema -->
+      <h2>⚡ SMARTWATT</h2>
+      <p>Ingeniero de Control Energético</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Menú de navegación principal -->
+
+      <a href="/pages/dashboard.html" class="nav-item activo">
+        <span class="nav-icon">📊</span> Dashboard
+        <!-- Página actual (activa) -->
+      </a>
+
+      <a href="/pages/equipos.html" class="nav-item">
+        <span class="nav-icon">⚙️</span> Equipos eléctricos
+      </a>
+
+      <a href="/pages/monitoreo.html" class="nav-item">
+        <span class="nav-icon">📈</span> Monitoreo energético
+      </a>
+
+      <a href="/pages/diagnostico.html" class="nav-item">
+        <span class="nav-icon">🔍</span> Diagnóstico inteligente
+      </a>
+
+      <a href="/pages/reportes.html" class="nav-item">
+        <span class="nav-icon">📋</span> Reportes técnicos
+      </a>
+
+    </nav>
+
+    <div style="padding:16px 20px; border-top:1px solid rgba(255,255,255,0.08);">
+      <!-- Área de usuario y sesión -->
+      <p id="usuarioNombre" style="font-size:12px; color:rgba(255,255,255,0.55); margin-bottom:8px;"></p>
+
+      <a href="#" class="nav-item" onclick="cerrarSesion()">
+        <span class="nav-icon">🚪</span> Cerrar sesión
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ── CONTENIDO PRINCIPAL ───────────────────────── -->
+  <!-- Contenedor principal del dashboard -->
+  <main class="main-content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <!-- Título principal de la página -->
+
+        <p id="fecha-actual" class="page-subtitle"></p>
+        <!-- Subtítulo dinámico con la fecha actual -->
+      </div>
+
+      <button class="btn btn-outline" onclick="cargarResumen()">
+        ↻ Actualizar
+      </button>
+      <!-- Botón para recargar los datos del dashboard -->
+
+    </div>
+
+    <!-- ALERTA -->
+    <!-- Contenedor para mensajes de estado o advertencias -->
+    <div class="alerta" id="alertaDashboard"></div>
+
+    <!-- KPI CARDS -->
+    <!-- Tarjetas de indicadores clave del sistema -->
+    <div class="kpi-grid">
+
+      <div class="kpi-card verde">
+        <!-- Consumo energético mensual -->
+        <div class="kpi-label">Consumo del mes</div>
+        <div class="kpi-valor" id="kpi-kwh">
+          —<span class="kpi-unidad">kWh</span>
+        </div>
+        <div class="kpi-descripcion">Mes actual acumulado</div>
+      </div>
+
+      <div class="kpi-card azul">
+        <!-- Equipos en estado activo -->
+        <div class="kpi-label">Equipos activos</div>
+        <div class="kpi-valor" id="kpi-equipos">—</div>
+        <div class="kpi-descripcion">En operación normal</div>
+      </div>
+
+      <div class="kpi-card amarillo">
+        <!-- Incidencias abiertas -->
+        <div class="kpi-label">Incidencias abiertas</div>
+        <div class="kpi-valor" id="kpi-incidencias">—</div>
+        <div class="kpi-descripcion">Requieren atención</div>
+      </div>
+
+      <div class="kpi-card rojo">
+        <!-- Incidencias críticas -->
+        <div class="kpi-label">Incidencias críticas</div>
+        <div class="kpi-valor" id="kpi-criticas">—</div>
+        <div class="kpi-descripcion">Prioridad alta</div>
+      </div>
+
+    </div>
+
+    <!-- GRÁFICA BARRAS -->
+    <!-- Visualización del consumo por equipo -->
+    <div class="card">
+      <div class="card-titulo">📊 Consumo por equipo</div>
+      <canvas id="grafica-equipos"></canvas>
+    </div>
+
+    <!-- GRÁFICA LÍNEA -->
+    <!-- Tendencia de consumo semanal -->
+    <div class="card">
+      <div class="card-titulo">📈 Tendencia semanal</div>
+      <canvas id="grafica-tendencia"></canvas>
+    </div>
+
+    <!-- TABLA INCIDENCIAS -->
+    <!-- Listado de incidencias recientes del sistema -->
+    <div class="card">
+      <div class="card-titulo">⚠️ Incidencias recientes</div>
+
+      <table class="tabla-moderna">
+        <thead>
+          <tr>
+            <th>Equipo</th>
+            <th>Descripción</th>
+            <th>Severidad</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+
+        <tbody id="tabla-incidencias">
+          <tr>
+            <td colspan="5" style="text-align:center; padding:24px; color:#9CA3AF;">
+              Cargando datos…
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- SCRIPTS -->
+  <!-- Utilidades generales del sistema -->
+  <script src="/scripts/utils.js"></script>
+
+  <!-- Librería para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Lógica del dashboard -->
+  <script src="/scripts/dashboard.js"></script>
+
+</body>
+</html>
