@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <!-- Define la codificación de caracteres utilizada por la página. -->
+  <meta charset="UTF-8">
+
+  <!-- Permite que la página se adapte correctamente a diferentes tamaños de pantalla. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Título que se mostrará en la pestaña del navegador. -->
+  <title>SmartWatt Diagnostics — Equipos</title>
+
+  <!-- Vincula la hoja de estilos principal del sistema. -->
+  <link rel="stylesheet" href="/styles/main.css">
+
+</head>
+<body>
+
+
+  <!-- Barra lateral de navegación principal del sistema. -->
+  <aside class="sidebar">
+
+    <!-- Sección que contiene el logotipo y descripción del sistema. -->
+    <div class="sidebar-logo">
+
+      <!-- Nombre del sistema. -->
+      <h2>⚡ SMARTWATT</h2>
+
+      <!-- Descripción del perfil de usuario del sistema. -->
+      <p>Ingeniero de Control Energético</p>
+
+    </div>
+
+
+    <!-- Menú de navegación entre los diferentes módulos de la aplicación. -->
+    <nav class="sidebar-nav">
+
+      <!-- Enlace hacia el panel principal del sistema. -->
+      <a href="/pages/dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+
+      <!-- Enlace hacia la gestión de equipos eléctricos. -->
+      <a href="/pages/equipos.html" class="nav-item activo"><span class="nav-icon">⚙️</span> Equipos eléctricos</a>
+
+      <!-- Enlace hacia el módulo de monitoreo energético. -->
+      <a href="/pages/monitoreo.html" class="nav-item"><span class="nav-icon">📈</span> Monitoreo energético</a>
+
+      <!-- Enlace hacia el módulo de diagnóstico inteligente. -->
+      <a href="/pages/diagnostico.html" class="nav-item"><span class="nav-icon">🔍</span> Diagnóstico inteligente</a>
+
+      <!-- Enlace hacia el módulo de reportes técnicos. -->
+      <a href="/pages/reportes.html" class="nav-item"><span class="nav-icon">📋</span> Reportes técnicos</a>
+
+    </nav>
+
+
+    <!-- Sección inferior de la barra lateral con información del usuario y cierre de sesión. -->
+    <div style="padding:16px 20px; border-top:1px solid rgba(255,255,255,0.08);">
+
+      <!-- Elemento donde se mostrará dinámicamente el nombre del usuario. -->
+      <p id="usuarioNombre" style="font-size:12px; color:rgba(255,255,255,0.55); margin-bottom:8px;"></p>
+
+      <!-- Botón encargado de cerrar la sesión actual. -->
+      <a href="#" class="nav-item" onclick="cerrarSesion()"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+
+    </div>
+
+  </aside>
+
+
+
+  <!-- Contenido principal correspondiente al módulo de equipos. -->
+  <main class="main-content">
+
+
+    <!-- Encabezado de la página con título, descripción y acción principal. -->
+    <div class="page-header">
+
+      <div>
+
+        <!-- Título principal del módulo. -->
+        <h1 class="page-title">Gestión de equipos</h1>
+
+        <!-- Descripción del objetivo de la sección. -->
+        <p class="page-subtitle">Registro y administración de equipos eléctricos</p>
+
+      </div>
+
+
+      <!-- Botón que permite abrir el formulario para registrar un nuevo equipo. -->
+      <button class="btn btn-primario" onclick="abrirFormulario()">+ Nuevo equipo</button>
+
+    </div>
+
+
+
+    <!-- Contenedor utilizado para mostrar mensajes o alertas del módulo. -->
+    <div class="alerta" id="alertaEquipos"></div>
+
+
+
+    <!-- Formulario para registrar un nuevo equipo, oculto inicialmente. -->
+    <div class="card" id="formNuevoEquipo" style="display:none;">
+
+      <!-- Título del formulario de registro. -->
+      <div class="card-titulo">➕ Registrar nuevo equipo</div>
+
+
+      <!-- Contenedor que organiza los campos del formulario en dos columnas. -->
+      <div style="mathrmDdisplay:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+        <!-- Campo para ingresar el nombre del equipo. -->
+        <div class="form-group">
+          <label class="form-label">Nombre del equipo</label>
+          <input type="text" id="equipoNombre" class="form-control" placeholder="Ej. Compresor A1">
+        </div>
+
+
+        <!-- Campo para seleccionar el tipo de equipo. -->
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+
+          <select id="equipoTipo" class="form-control">
+
+            <!-- Opciones disponibles para clasificar el equipo. -->
+            <option value="">Selecciona un tipo…</option>
+            <option value="compresor">Compresor</option>
+            <option value="motor">Motor eléctrico</option>
+            <option value="transformador">Transformador</option>
+            <option value="bomba">Bomba</option>
+            <option value="iluminacion">Iluminación</option>
+            <option value="hvac">HVAC / Clima</option>
+            <option value="otro">Otro</option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Campo para registrar la ubicación física del equipo. -->
+        <div class="form-group">
+          <label class="form-label">Ubicación</label>
+          <input type="text" id="equipoUbicacion" class="form-control" placeholder="Ej. Planta baja, Área de producción">
+        </div>
+
+
+        <!-- Campo para ingresar la potencia nominal del equipo. -->
+        <div class="form-group">
+          <label class="form-label">Potencia nominal (kW)</label>
+          <input type="number" id="equipoPotencia" class="form-control" placeholder="Ej. 15.5" step="0.1" min="0">
+        </div>
+
+
+      </div>
+
+
+      <!-- Botones de acción del formulario. -->
+      <div style="display:flex; gap:10px; margin-top:8px;">
+
+        <!-- Guarda la información del nuevo equipo. -->
+        <button class="btn btn-primario" onclick="guardarEquipo()">💾 Guardar equipo</button>
+
+        <!-- Cancela el registro y cierra el formulario. -->
+        <button class="btn btn-outline" onclick="cerrarFormulario()">Cancelar</button>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Tarjeta que contiene la tabla con los equipos registrados. -->
+    <div class="card">
+
+      <!-- Título de la sección de equipos registrados. -->
+      <div class="card-titulo">⚙️ Lista de equipos registrados</div>
+
+
+      <!-- Tabla utilizada para mostrar la información de los equipos. -->
+      <table class="tabla-moderna">
+
+        <!-- Encabezado de la tabla. -->
+        <thead>
+
+          <tr>
+
+            <!-- Identificador del equipo. -->
+            <th>#</th>
+
+            <!-- Nombre del equipo registrado. -->
+            <th>Nombre</th>
+
+            <!-- Tipo de equipo. -->
+            <th>Tipo</th>
+
+            <!-- Ubicación del equipo. -->
+            <th>Ubicación</th>
+
+            <!-- Potencia nominal del equipo. -->
+            <th style="text-align:right;">Potencia (kW)</th>
+
+            <!-- Estado actual del equipo. -->
+            <th>Estado</th>
+
+            <!-- Control disponible del equipo. -->
+            <th>Control</th>
+
+            <!-- Acciones disponibles sobre el equipo. -->
+            <th>Acción</th>
+
+          </tr>
+
+        </thead>
+
+
+        <!-- Cuerpo de la tabla donde se cargarán dinámicamente los equipos. -->
+        <tbody id="tablaEquiposCuerpo">
+
+          <!-- Mensaje mostrado mientras se obtienen los datos. -->
+          <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#9CA3AF;">
+              Cargando equipos…
+            </td>
+          </tr>
+
+        </tbody>
+
+
+      </table>
+
+
+    </div>
+
+
+  </main>
+
+
+  <!-- Archivo JavaScript con funciones generales utilizadas por la aplicación. -->
+  <script src="/scripts/utils.js"></script>
+
+  <!-- Archivo JavaScript encargado de la lógica específica del módulo de equipos. -->
+  <script src="/scripts/equipos.js"></script>
+
+
+</body>
+</html>

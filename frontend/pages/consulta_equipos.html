@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <!-- Define la codificación de caracteres utilizada en la página. -->
+  <meta charset="UTF-8">
+
+  <!-- Permite la adaptación del diseño a diferentes dispositivos y tamaños de pantalla. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Título mostrado en la pestaña del navegador. -->
+  <title>SmartWatt Diagnostics — Consulta de equipos</title>
+
+  <!-- Archivo de estilos principal utilizado por la aplicación. -->
+  <link rel="stylesheet" href="/styles/main.css">
+
+</head>
+<body>
+
+
+  <!-- Barra lateral con la navegación principal del sistema. -->
+  <aside class="sidebar">
+
+    <!-- Sección que contiene la identidad del sistema y el rol del usuario. -->
+    <div class="sidebar-logo">
+
+      <!-- Nombre del sistema. -->
+      <h2>⚡ SMARTWATT</h2>
+
+      <!-- Texto que se actualiza según el tipo de usuario autenticado. -->
+      <p id="rolLabel">Control Energético</p>
+
+    </div>
+
+
+    <!-- Menú de navegación generado dinámicamente mediante JavaScript según el rol del usuario. -->
+    <nav class="sidebar-nav" id="navMenu">
+
+      <!-- El contenido de este menú es generado mediante JavaScript. -->
+
+    </nav>
+
+
+    <!-- Sección inferior de la barra lateral con información del usuario y cierre de sesión. -->
+    <div style="padding:16px 20px; border-top:1px solid rgba(255,255,255,0.08);">
+
+      <!-- Elemento donde se muestra el nombre del usuario conectado. -->
+      <p id="usuarioNombre" style="font-size:12px; color:rgba(255,255,255,0.55); margin-bottom:8px;"></p>
+
+      <!-- Ejecuta la función encargada de cerrar la sesión del usuario. -->
+      <a href="#" class="nav-item" onclick="cerrarSesion()"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+
+    </div>
+
+  </aside>
+
+
+
+  <!-- Contenedor principal del contenido de la página. -->
+  <main class="main-content">
+
+
+    <!-- Encabezado de la sección de consulta de equipos. -->
+    <div class="page-header">
+
+      <div>
+
+        <!-- Título principal de la página. -->
+        <h1 class="page-title">Consulta de equipos</h1>
+
+        <!-- Descripción del objetivo del módulo. -->
+        <p class="page-subtitle">Directorio de todos los equipos registrados</p>
+
+      </div>
+
+
+      <!-- Campo utilizado para realizar búsquedas dentro de la lista de equipos. -->
+      <input type="text" id="buscador" class="form-control"
+             placeholder="🔍 Buscar por nombre, tipo o ubicación…"
+             style="width:260px;"
+             oninput="filtrarTabla()">
+
+    </div>
+
+
+
+    <!-- Sección que muestra indicadores generales del estado de los equipos. -->
+    <div class="kpi-grid">
+
+
+      <!-- Tarjeta que muestra la cantidad de equipos activos. -->
+      <div class="kpi-card verde">
+        <div class="kpi-label">Activos</div>
+        <div class="kpi-valor" id="kpiActivos">—</div>
+      </div>
+
+
+      <!-- Tarjeta que muestra la cantidad de equipos en mantenimiento. -->
+      <div class="kpi-card amarillo">
+        <div class="kpi-label">En mantenimiento</div>
+        <div class="kpi-valor" id="kpiMantenimiento">—</div>
+      </div>
+
+
+      <!-- Tarjeta que muestra la cantidad de equipos inactivos. -->
+      <div class="kpi-card rojo">
+        <div class="kpi-label">Inactivos</div>
+        <div class="kpi-valor" id="kpiInactivos">—</div>
+      </div>
+
+
+    </div>
+
+
+
+    <!-- Tarjeta que contiene la tabla completa de equipos registrados. -->
+    <div class="card">
+
+      <!-- Título de la sección de consulta. -->
+      <div class="card-titulo">🔎 Lista completa de equipos</div>
+
+
+      <!-- Contenedor que permite desplazamiento horizontal en pantallas pequeñas. -->
+      <div style="overflow-x:auto;">
+
+
+        <!-- Tabla donde se muestran los datos de los equipos. -->
+        <table class="tabla-moderna">
+
+
+          <!-- Encabezado de la tabla. -->
+          <thead>
+
+            <tr>
+
+              <!-- Número identificador del equipo. -->
+              <th>#</th>
+
+              <!-- Nombre del equipo. -->
+              <th>Nombre</th>
+
+              <!-- Tipo de equipo registrado. -->
+              <th>Tipo</th>
+
+              <!-- Ubicación física del equipo. -->
+              <th>Ubicación</th>
+
+              <!-- Potencia nominal del equipo. -->
+              <th style="text-align:right;">Potencia (kW)</th>
+
+              <!-- Estado actual del equipo. -->
+              <th>Estado</th>
+
+              <!-- Fecha en la que fue registrado el equipo. -->
+              <th>Fecha registro</th>
+
+            </tr>
+
+          </thead>
+
+
+          <!-- Cuerpo de la tabla donde se insertan los equipos mediante JavaScript. -->
+          <tbody id="tablaConsultaCuerpo">
+
+            <!-- Mensaje mostrado mientras se cargan los datos. -->
+            <tr>
+              <td colspan="7" style="text-align:center; padding:24px; color:#9CA3AF;">
+                Cargando equipos…
+              </td>
+            </tr>
+
+          </tbody>
+
+
+        </table>
+
+
+      </div>
+
+
+    </div>
+
+
+  </main>
+
+
+  <!-- Archivo con funciones generales compartidas por diferentes páginas. -->
+  <script src="/scripts/utils.js"></script>
+
+
+  <script>
+
+  // Arreglo donde se almacenan temporalmente todos los equipos obtenidos del servidor.
+  let todosEquipos = [];
+
+
+  // Ejecuta acciones iniciales cuando la página termina de cargar.
+  document.addEventListener('DOMContentLoaded', () => {
+
+
+    // Verifica que exista un usuario autenticado antes de continuar.
+    if (!localStorage.getItem('usuario_id')) { window.location.href = '/'; return; }
+
+
+    // Obtiene los datos del usuario almacenados en el navegador.
+    const nombre = localStorage.getItem('usuario_nombre') || '';
+    const rol    = localStorage.getItem('usuario_rol')    || '';
+
+
+    // Muestra el nombre del usuario en la interfaz.
+    document.getElementById('usuarioNombre').textContent = nombre;
+
+
+    // Actualiza la etiqueta del rol mostrado en la barra lateral.
+    document.getElementById('rolLabel').textContent =
+      rol === 'ingeniero' ? 'Ingeniero' : 'Técnico de monitoreo';
+
+
+
+    // Obtiene el elemento donde se generará el menú de navegación.
+    const nav = document.getElementById('navMenu');
+
+
+    // Genera las opciones del menú según los permisos del usuario.
+    if (rol === 'ingeniero') {
+
+
+      // Menú completo disponible para usuarios con rol de ingeniero.
+      nav.innerHTML = `
+        <a href="/pages/dashboard.html"       class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="/pages/equipos.html"         class="nav-item"><span class="nav-icon">⚙️</span> Equipos</a>
+        <a href="/pages/monitoreo.html"       class="nav-item"><span class="nav-icon">📈</span> Monitoreo</a>
+        <a href="/pages/diagnostico.html"     class="nav-item"><span class="nav-icon">🔍</span> Diagnóstico</a>
+        <a href="/pages/reportes.html"        class="nav-item"><span class="nav-icon">📋</span> Reportes</a>
+        <a href="/pages/consulta_equipos.html" class="nav-item activo"><span class="nav-icon">🔎</span> Consulta equipos</a>`;
+
+
+    } else {
+
+
+      // Menú limitado para usuarios técnicos.
+      nav.innerHTML = `
+        <a href="/pages/registro_consumo.html"    class="nav-item"><span class="nav-icon">📝</span> Registro consumo</a>
+        <a href="/pages/registro_incidencias.html" class="nav-item"><span class="nav-icon">⚠️</span> Reportar incidencia</a>
+        <a href="/pages/consulta_equipos.html"    class="nav-item activo"><span class="nav-icon">🔎</span> Consulta equipos</a>`;
+
+    }
+
+
+    // Carga la información de los equipos registrados.
+    cargarEquipos();
+
+  });
+
+
+
+  // Obtiene la información de equipos desde la API del sistema.
+  async function cargarEquipos() {
+
+    try {
+
+
+      // Realiza una solicitud al endpoint encargado de devolver los equipos.
+      const resp   = await fetch('/api/equipos');
+
+
+      // Guarda la respuesta obtenida en el arreglo global.
+      todosEquipos = await resp.json();
+
+
+      // Actualiza la tabla y los indicadores mostrados.
+      filtrarTabla();
+      actualizarKPIs(todosEquipos);
+
+
+    } catch (e) {
+
+
+      // Muestra errores ocurridos durante la consulta.
+      console.error('[Consulta equipos]', e);
+
+
+    }
+
+  }
+
+
+
+  // Filtra la lista de equipos según el texto ingresado por el usuario.
+  function filtrarTabla() {
+
+
+    // Obtiene el texto de búsqueda y lo convierte a minúsculas.
+    const query = document.getElementById('buscador').value.toLowerCase();
+
+
+    // Genera una nueva lista con los equipos que coinciden con la búsqueda.
+    const filtrados = query
+      ? todosEquipos.filter(e =>
+          (e.nombre     || '').toLowerCase().includes(query) ||
+          (e.tipo       || '').toLowerCase().includes(query) ||
+          (e.ubicacion  || '').toLowerCase().includes(query))
+      : todosEquipos;
+
+
+    // Actualiza la tabla con los resultados filtrados.
+    renderizarTabla(filtrados);
+
+  }
+
+
+
+  // Construye dinámicamente las filas de la tabla de equipos.
+  function renderizarTabla(lista) {
+
+
+    // Obtiene el cuerpo de la tabla.
+    const tbody = document.getElementById('tablaConsultaCuerpo');
+
+
+    // Limpia el contenido actual antes de insertar nuevos datos.
+    tbody.innerHTML = '';
+
+
+
+    // Verifica si existen resultados disponibles.
+    if (lista.length === 0) {
+
+      // Muestra un mensaje cuando no hay equipos encontrados.
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:#9CA3AF;">Sin resultados.</td></tr>';
+      return;
+
+    }
+
+
+
+    // Define las clases visuales utilizadas para representar cada estado.
+    const badgeEst = {
+      activo:         'badge-verde',
+      inactivo:       'badge-rojo',
+      mantenimiento:  'badge-amarillo',
+    };
+
+
+
+    // Recorre la lista de equipos y genera una fila por cada elemento.
+    lista.forEach(e => {
+
+
+      // Crea una nueva fila para insertar los datos del equipo.
+      const tr = document.createElement('tr');
+
+
+      // Inserta la información del equipo dentro de la fila.
+      tr.innerHTML = `
+        <td>${e.id}</td>
+        <td style="font-weight:500;">${e.nombre}</td>
+        <td>${e.tipo}</td>
+        <td>${e.ubicacion}</td>
+        <td style="text-align:right;">${e.potencia_kw ?? '—'}</td>
+        <td><span class="badge ${badgeEst[e.estado] || 'badge-gris'}">${e.estado}</span></td>
+        <td>${(e.fecha_registro || '').slice(0, 10)}</td>`;
+
+
+      // Agrega la fila creada al cuerpo de la tabla.
+      tbody.appendChild(tr);
+
+
+    });
+
+  }
+
+
+
+  // Actualiza los indicadores KPI con la cantidad de equipos según su estado.
+  function actualizarKPIs(lista) {
+
+    document.getElementById('kpiActivos').textContent       = lista.filter(e => e.estado === 'activo').length;
+    document.getElementById('kpiMantenimiento').textContent = lista.filter(e => e.estado === 'mantenimiento').length;
+    document.getElementById('kpiInactivos').textContent     = lista.filter(e => e.estado === 'inactivo').length;
+
+  }
+
+
+
+  // Finaliza la sesión eliminando los datos almacenados del usuario.
+  function cerrarSesion() {
+
+    localStorage.clear();
+    window.location.href = '/';
+
+  }
+
+
+  </script>
+
+</body>
+</html>
