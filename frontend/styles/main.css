@@ -1,0 +1,434 @@
+/* frontend/styles/main.css */
+/* ================================================
+   SMART WATT DIAGNOSTICS — Estilos globales
+   Paleta: Azul tecnológico, Verde energético,
+           Amarillo alerta, Rojo crítico
+   ================================================ */
+
+:root {
+  /* Paleta principal */
+  --azul-oscuro:    #0B1F3B;
+  --azul-medio:     #1E5AA8;
+  --verde-energia:  #22C55E;
+  --verde-claro:    #A7F3D0;
+  --amarillo:       #FACC15;
+  --amarillo-oscuro:#CA8A04;
+  --rojo:           #EF4444;
+  --rojo-oscuro:    #991B1B;
+
+  /* Neutros */
+  --blanco:         #FFFFFF;
+  --gris-claro:     #F3F4F6;
+  --gris-oscuro:    #374151;
+
+  /* Tipografía */
+  --fuente:         'Segoe UI', 'Inter', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--fuente);
+  background-color: var(--gris-claro);
+  color: var(--gris-oscuro);
+  min-height: 100vh;
+}
+
+/* ── NAVEGACIÓN LATERAL ────────────────────────── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--azul-oscuro);
+  color: var(--blanco);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-logo h2 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--verde-energia);
+  text-transform: uppercase;
+}
+
+.sidebar-logo p {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
+}
+
+.sidebar-nav { flex: 1; padding: 16px 0; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover,
+.nav-item.activo {
+  background: rgba(255,255,255,0.06);
+  color: var(--blanco);
+  border-left-color: var(--verde-energia);
+}
+
+.nav-icon { font-size: 16px; }
+
+/* ── CONTENIDO PRINCIPAL ───────────────────────── */
+.main-content {
+  margin-left: 240px;
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+/* ── TARJETAS DE INDICADORES (KPI Cards) ─────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.kpi-card {
+  background: var(--blanco);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #E5E7EB;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.kpi-card.verde::before  { background: var(--verde-energia); }
+.kpi-card.azul::before   { background: var(--azul-medio); }
+.kpi-card.amarillo::before { background: var(--amarillo); }
+.kpi-card.rojo::before   { background: var(--rojo); }
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #9CA3AF;
+  margin-bottom: 8px;
+}
+
+.kpi-valor {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+  line-height: 1;
+}
+
+.kpi-unidad {
+  font-size: 13px;
+  font-weight: 400;
+  color: #6B7280;
+  margin-left: 4px;
+}
+
+.kpi-descripcion {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-top: 8px;
+}
+
+/* ── TARJETAS DE CONTENIDO ───────────────────── */
+.card {
+  background: var(--blanco);
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.card-titulo {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--azul-oscuro);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+/* ── TABLA MODERNA ───────────────────────────── */
+.tabla-moderna {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed; 
+}
+
+/* Encabezados */
+.tabla-moderna th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6B7280;
+  background: #F9FAFB;
+  border-bottom: 1px solid #E5E7EB;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Celdas */
+.tabla-moderna td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #F3F4F6;
+  color: var(--gris-oscuro);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Hover */
+.tabla-moderna tr:hover td {
+  background: #F9FAFB;
+}
+
+/* ───── UTILIDADES QUE TE FALTABAN ───── */
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.mono {
+  font-family: monospace;
+}
+
+/* ───── ANCHOS (para que no se desacomode) ───── */
+.tabla-moderna th:nth-child(1),
+.tabla-moderna td:nth-child(1) {
+  width: 50px;
+}
+
+.tabla-moderna th:nth-child(2),
+.tabla-moderna td:nth-child(2) {
+  width: 180px;
+}
+
+.tabla-moderna th:nth-child(3),
+.tabla-moderna td:nth-child(3),
+.tabla-moderna th:nth-child(4),
+.tabla-moderna td:nth-child(4),
+.tabla-moderna th:nth-child(5),
+.tabla-moderna td:nth-child(5),
+.tabla-moderna th:nth-child(6),
+.tabla-moderna td:nth-child(6) {
+  width: 120px;
+}
+
+.tabla-moderna th:nth-child(7),
+.tabla-moderna td:nth-child(7) {
+  width: 160px;
+}
+
+/* ── BADGES DE ESTADO ────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-verde    { background: #DCFCE7; color: #166534; }
+.badge-amarillo { background: #FEF9C3; color: #854D0E; }
+.badge-rojo     { background: #FEE2E2; color: #991B1B; }
+.badge-gris     { background: #F3F4F6; color: #374151; }
+.badge-azul     { background: #DBEAFE; color: #1E40AF; }
+
+/* ── BOTONES ─────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.btn-primario {
+  background: var(--azul-medio);
+  color: var(--blanco);
+}
+.btn-primario:hover { background: #1a4f96; }
+
+.btn-verde {
+  background: var(--verde-energia);
+  color: var(--blanco);
+}
+.btn-verde:hover { background: #16a34a; }
+
+.btn-rojo {
+  background: var(--rojo);
+  color: var(--blanco);
+}
+.btn-rojo:hover { background: #dc2626; }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #D1D5DB;
+  color: var(--gris-oscuro);
+}
+.btn-outline:hover { background: #F9FAFB; }
+
+/* ── FORMULARIOS ─────────────────────────────── */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--fuente);
+  color: var(--gris-oscuro);
+  background: var(--blanco);
+  transition: border-color 0.15s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--azul-medio);
+  box-shadow: 0 0 0 3px rgba(30, 90, 168, 0.1);
+}
+
+/* ── ALERTA DE ESTADO ────────────────────────── */
+.alerta {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+.alerta.visible { display: block; }
+.alerta-error   { background: #FEE2E2; color: #991B1B; }
+.alerta-exito   { background: #DCFCE7; color: #166534; }
+.alerta-warning { background: #FEF9C3; color: #854D0E; }
+
+/* ── PANTALLA LOGIN ──────────────────────────── */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, #1a3560 100%);
+}
+
+.login-card {
+  background: var(--blanco);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.logo-img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 14px auto;
+}
+
+.login-logo h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+  margin-top: 12px;
+}
+
+.login-logo p {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-top: 4px;
+}
+
+
+
+/* ── INDICADOR SEMÁFORO ──────────────────────── */
+.semaforo {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.semaforo-verde    { background: var(--verde-energia); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+.semaforo-amarillo { background: var(--amarillo); box-shadow: 0 0 6px rgba(250,204,21,0.5); }
+.semaforo-rojo     { background: var(--rojo); box-shadow: 0 0 6px rgba(239,68,68,0.5); }
