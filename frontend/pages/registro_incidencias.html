@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartWatt Diagnostics — Reportar incidencia</title>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h2>⚡ SMARTWATT</h2>
+      <p>Técnico de monitoreo</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/pages/registro_consumo.html"    class="nav-item"><span class="nav-icon">📝</span> Registro consumo</a>
+      <a href="/pages/registro_incidencias.html" class="nav-item activo"><span class="nav-icon">⚠️</span> Reportar incidencia</a>
+      <a href="/pages/consulta_equipos.html"    class="nav-item"><span class="nav-icon">🔎</span> Consulta equipos</a>
+    </nav>
+    <div style="padding:16px 20px; border-top:1px solid rgba(255,255,255,0.08);">
+      <p id="usuarioNombre" style="font-size:12px; color:rgba(255,255,255,0.55); margin-bottom:8px;"></p>
+      <a href="#" class="nav-item" onclick="cerrarSesion()"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Reportar incidencia</h1>
+        <p class="page-subtitle">Registro de fallas y anomalías en equipos</p>
+      </div>
+    </div>
+
+    <div class="alerta" id="alertaIncidencia"></div>
+
+    <div class="card" style="max-width:560px;">
+      <div class="card-titulo">⚠️ Nueva incidencia</div>
+
+      <div class="form-group">
+        <label class="form-label">Equipo afectado *</label>
+        <select id="incidenciaEquipoId" class="form-control">
+          <option value="">Cargando equipos…</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Severidad *</label>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:4px;">
+          <label style="cursor:pointer;">
+            <input type="radio" name="severidad" value="baja"> 
+            <span class="badge badge-azul" style="display:block; text-align:center; margin-top:4px; cursor:pointer;">Baja</span>
+          </label>
+          <label style="cursor:pointer;">
+            <input type="radio" name="severidad" value="media">
+            <span class="badge badge-amarillo" style="display:block; text-align:center; margin-top:4px; cursor:pointer;">Media</span>
+          </label>
+          <label style="cursor:pointer;">
+            <input type="radio" name="severidad" value="alta">
+            <span class="badge badge-rojo" style="display:block; text-align:center; margin-top:4px; cursor:pointer;">Alta</span>
+          </label>
+          <label style="cursor:pointer;">
+            <input type="radio" name="severidad" value="critica">
+            <span class="badge badge-rojo" style="display:block; text-align:center; margin-top:4px; cursor:pointer; background:#7F1D1D;">Crítica</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descripción de la falla *</label>
+        <textarea id="incidenciaDescripcion" class="form-control"
+                  rows="4"
+                  placeholder="Describe detalladamente la falla observada: síntomas, ruidos, lecturas anómalas, condiciones del entorno…"
+                  style="resize:vertical;"></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-rojo" onclick="guardarIncidencia()">🚨 Reportar incidencia</button>
+        <button class="btn btn-outline" onclick="limpiarIncidencia()">🗑 Limpiar</button>
+      </div>
+    </div>
+
+  </main>
+  <script src="/scripts/utils.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!localStorage.getItem('usuario_id')) { window.location.href = '/'; return; }
+    document.getElementById('usuarioNombre').textContent =
+      localStorage.getItem('usuario_nombre') || '';
+    cargarEquiposSelect();
+  });
+
+  async function cargarEquiposSelect() {
+    try {
+      const resp  = await fetch('/api/equipos');
+      const lista = await resp.json();
+      const sel   = document.getElementById('incidenciaEquipoId');
+      sel.innerHTML = '<option value="">Selecciona un equipo…</option>' +
+        lista.map(e => `<option value="${e.id}">${e.nombre} — ${e.ubicacion}</option>`).join('');
+    } catch (err) {
+      console.error('[Incidencias] cargarEquiposSelect:', err);
+    }
+  }
+
+  async function guardarIncidencia() {
+  const equipoId    = document.getElementById('incidenciaEquipoId').value;
+  const severidad   = document.querySelector('input[name="severidad"]:checked')?.value;
+  const descripcion = document.getElementById('incidenciaDescripcion').value.trim();
+
+  if (!equipoId || !severidad || !descripcion) {
+    mostrarAlerta('Por favor completa todos los campos obligatorios.', 'error');
+    return;
+  }
+
+  try {
+    const resp = await fetch('/api/incidencias', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        equipo_id: parseInt(equipoId),
+        severidad,
+        descripcion,
+        tecnico_id: parseInt(localStorage.getItem('usuario_id'))
+      })
+    });
+
+    const datos = await resp.json();
+
+    //  aquí se lee el mensaje del backend
+    if (resp.ok && datos.exito) {
+      mostrarAlerta('✔ Incidencia reportada correctamente.', 'exito');
+      limpiarIncidencia();
+    } else {
+      mostrarAlerta(datos.mensaje || 'No se pudo guardar la incidencia.', 'error');
+    }
+
+  } catch (e) {
+    mostrarAlerta('No se pudo conectar con el servidor.', 'error');
+    console.error('[Incidencias]', e);
+  }
+}
+
+  function limpiarIncidencia() {
+    document.getElementById('incidenciaEquipoId').value = '';
+    document.querySelectorAll('input[name="severidad"]').forEach(r => r.checked = false);
+    document.getElementById('incidenciaDescripcion').value = '';
+  }
+
+  function mostrarAlerta(msg, tipo) {
+    const div = document.getElementById('alertaIncidencia');
+    div.textContent = msg;
+    div.className = `alerta alerta-${tipo} visible`;
+    setTimeout(() => div.classList.remove('visible'), 4500);
+  }
+
+  function cerrarSesion() {
+    localStorage.clear();
+    window.location.href = '/';
+  }
+  </script>
+</body>
+</html>

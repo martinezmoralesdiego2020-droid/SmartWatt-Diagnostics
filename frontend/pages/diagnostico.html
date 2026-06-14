@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartWatt Diagnostics — Diagnóstico inteligente</title>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+ 
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h2>⚡ SmartWatt </h2>
+      <p>Ingeniero de Control Energético</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/pages/dashboard.html"   class="nav-item"><span class="nav-icon">📊</span>Dashboard</a>
+      <a href="/pages/equipos.html"     class="nav-item"><span class="nav-icon">⚙️</span>Equipos eléctricos</a>
+      <a href="/pages/monitoreo.html"   class="nav-item"><span class="nav-icon">📈</span>Monitoreo energético</a>
+      <a href="/pages/diagnostico.html" class="nav-item activo"><span class="nav-icon">🔍</span>Diagnóstico inteligente</a>
+      <a href="/pages/reportes.html"    class="nav-item"><span class="nav-icon">📋</span>Reportes técnicos</a>
+    </nav>
+    <div style="padding:16px 20px; border-top:1px solid rgba(255,255,255,0.08);">
+      <p id="usuarioNombre" style="font-size:12px; color:rgba(255,255,255,0.55); margin-bottom:8px;"></p>
+      <a href="#" class="nav-item" onclick="cerrarSesion()"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+    </div>
+  </aside>
+ 
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Diagnóstico inteligente</h1>
+        <p class="page-subtitle">Análisis de estado y detección de anomalías</p>
+      </div>
+    </div>
+ 
+    <!-- Resumen de diagnóstico -->
+    <div class="kpi-grid">
+      <div class="kpi-card verde">
+        <span class="kpi-icono">✅</span>
+        <div class="kpi-label">Equipos normales</div>
+        <div class="kpi-valor"><span id="diag-normal">—</span></div>
+        <div class="kpi-descripcion">Operando dentro de parámetros</div>
+      </div>
+      <div class="kpi-card amarillo">
+        <span class="kpi-icono">⚠️</span>
+        <div class="kpi-label">Con alertas</div>
+        <div class="kpi-valor"><span id="diag-alerta">—</span></div>
+        <div class="kpi-descripcion">Requieren revisión</div>
+      </div>
+      <div class="kpi-card rojo">
+        <span class="kpi-icono">🚨</span>
+        <div class="kpi-label">Estado crítico</div>
+        <div class="kpi-valor"><span id="diag-critico">—</span></div>
+        <div class="kpi-descripcion">Acción inmediata requerida</div>
+      </div>
+      <div class="kpi-card azul">
+        <span class="kpi-icono">⏸️</span>
+        <div class="kpi-label">Equipos inactivos</div>
+        <div class="kpi-valor"><span id="diag-sin-datos">—</span></div>
+        <div class="kpi-descripcion">Equipos fuera de operación</div>
+      </div>
+    </div>
+ 
+    <!-- Alertas de anomalías -->
+    <div class="card" id="card-anomalias" style="display:none;">
+      <div class="card-titulo">⚠️ Anomalías detectadas</div>
+      <div id="lista-anomalias"></div>
+    </div>
+ 
+    <!-- Grid de diagnóstico por equipo -->
+    <div class="card">
+      <div class="card-titulo">
+        Estado de equipos
+        <div class="filtros-bar" style="margin:0;">
+          <select class="form-control" id="filtro-diag" onchange="filtrarDiag()" style="max-width:160px;">
+            <option value="">Todos</option>
+            <option value="normal">Normal</option>
+            <option value="alerta">Con alerta</option>
+            <option value="critico">Crítico</option>
+            <option value="inactivo">Inactivos</option>
+          </select>
+        </div>
+      </div>
+      <div class="diag-grid" id="diag-grid">
+        <p class="text-muted">Cargando diagnóstico...</p>
+      </div>
+    </div>
+ 
+    <!-- Tabla de incidencias activas -->
+    <div class="card">
+      <div class="card-titulo">Incidencias activas</div>
+      <table class="tabla-moderna">
+        <thead>
+          <tr>
+            <th>Equipo</th>
+            <th>Descripción</th>
+            <th>Severidad</th>
+            <th>Estado</th>
+            <th>Reportada</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-diag-incidencias">
+          <tr><td class="tabla-vacia" colspan="6">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+ 
+  <script src="/scripts/utils.js"></script>
+  <script src="/scripts/diagnostico.js"></script>
+</body>
+</html>
