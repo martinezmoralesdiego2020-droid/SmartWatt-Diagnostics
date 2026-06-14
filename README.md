@@ -70,6 +70,36 @@ Desarrollar una plataforma que permita registrar, monitorear y analizar informac
 
 ---
 
+## Requisitos del sistema
+
+### Requisitos de hardware
+
+| Componente | Requisito mínimo |
+|---|---|
+| Procesador | Dual Core 2.0 GHz |
+| Memoria RAM | 4 GB |
+| Almacenamiento | 500 MB disponibles |
+| Pantalla | 1366×768 |
+
+### Requisitos de software
+
+| Software | Versión |
+|---|---|
+| Sistema operativo | Windows 10/11 o Ubuntu |
+| Python | 3.14 o superior |
+| Flask | 3.0.0 |
+| SQLite | Integrado |
+| Git | Última versión |
+| Visual Studio Code | Recomendado |
+| Navegador | Chrome, Edge o Firefox |
+| Entorno Linux | WSL2 |
+
+La instalación completa puede consultarse en:
+
+→ [Manual de instalación](docs/instalacion.md)
+
+---
+
 ## Organización del repositorio
 
 ```text
@@ -109,14 +139,6 @@ Consultar:
 
 ---
 
-## Ejecución del proyecto
-
-Para consultar el procedimiento completo de instalación y ejecución:
-
-→ [Manual de instalación](docs/instalacion.md)
-
----
-
 ## Uso del sistema
 
 La descripción de módulos y funcionamiento del sistema puede consultarse en:
@@ -137,6 +159,8 @@ Configuración utilizada:
 Más información:
 
 → [Entorno de desarrollo](docs/entorno-desarrollo.md)
+
+---
 
 ## Autores
 
