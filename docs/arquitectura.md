@@ -2,65 +2,67 @@
 
 ## Estructura general del proyecto
 
+```text
 SmartWatt-Diagnostics/
 │
 ├── backend/
-│ ├── services/
-│ │ ├── auth_service.py
-│ │ ├── consumo_service.py
-│ │ ├── equipos_service.py
-│ │ ├── incidencias_service.py
-│ │ ├── reportes_service.py
-│ │ └── usuarios_service.py
-│ ├── app.py
-│ └── database.py
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   ├── consumo_service.py
+│   │   ├── equipos_service.py
+│   │   ├── incidencias_service.py
+│   │   ├── reportes_service.py
+│   │   └── usuarios_service.py
+│   ├── app.py
+│   └── database.py
 │
 ├── database/
-│ └── energia.db
+│   └── energia.db
 │
 ├── docs/
-│ └── evidencias/
-│ ├── arquitectura/
-│ ├── entorno/
-│ ├── github-flow/
-│ ├── instalacion/
-│ ├── sistema/
-│ ├── arquitectura.md
-│ ├── entorno-desarrollo.md
-│ ├── flujo-github-flow.md
-│ ├── instalacion.md
-│ └── uso-del-sistema.md
+│   └── evidencias/
+│       ├── arquitectura/
+│       ├── entorno/
+│       ├── github-flow/
+│       ├── instalacion/
+│       ├── sistema/
+│       ├── arquitectura.md
+│       ├── entorno-desarrollo.md
+│       ├── flujo-github-flow.md
+│       ├── instalacion.md
+│       └── uso-del-sistema.md
 │
 ├── frontend/
-│ ├── img/
-│ │ └── SmartWatt.png
-│ ├── pages/
-│ │ ├── consulta_equipos.html
-│ │ ├── dashboard.html
-│ │ ├── diagnostico.html
-│ │ ├── equipos.html
-│ │ ├── login.html
-│ │ ├── monitoreo.html
-│ │ ├── registro_consumo.html
-│ │ ├── registro_incidencias.html
-│ │ ├── registro_usuario.html
-│ │ └── reportes.html
-│ ├── scripts/
-│ │ ├── auth.js
-│ │ ├── consumo.js
-│ │ ├── dashboard.js
-│ │ ├── diagnostico.js
-│ │ ├── equipos.js
-│ │ ├── reportes.js
-│ │ └── utils.js
-│ └── styles/
-│ └── main.css
+│   ├── img/
+│   │   └── SmartWatt.png
+│   ├── pages/
+│   │   ├── consulta_equipos.html
+│   │   ├── dashboard.html
+│   │   ├── diagnostico.html
+│   │   ├── equipos.html
+│   │   ├── login.html
+│   │   ├── monitoreo.html
+│   │   ├── registro_consumo.html
+│   │   ├── registro_incidencias.html
+│   │   ├── registro_usuario.html
+│   │   └── reportes.html
+│   ├── scripts/
+│   │   ├── auth.js
+│   │   ├── consumo.js
+│   │   ├── dashboard.js
+│   │   ├── diagnostico.js
+│   │   ├── equipos.js
+│   │   ├── reportes.js
+│   │   └── utils.js
+│   └── styles/
+│       └── main.css
 │
 ├── .gitignore
 ├── LICENSE
 ├── README.md
 ├── main.py
 └── requirements.txt
+```
 
 ## Descripción de cada carpeta
 
