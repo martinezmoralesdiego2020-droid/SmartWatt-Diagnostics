@@ -153,36 +153,7 @@ Contiene toda la interfaz de usuario y la lógica del cliente.
 
 ## Diagrama de flujo de carpetas
 
-```mermaid
-flowchart TD
-
-    A[SmartWatt-Diagnostics]
-
-    A --> B[backend]
-    A --> C[database]
-    A --> D[docs]
-    A --> E[frontend]
-
-    B --> B1[services]
-    B --> B2[app.py]
-    B --> B3[database.py]
-
-    C --> C1[energia.db]
-
-    D --> D1[evidencias]
-    D --> D2[Documentación]
-
-    E --> E1[img]
-    E --> E2[pages]
-    E --> E3[scripts]
-    E --> E4[styles]
-
-    E2 --> P[Interfaces HTML]
-
-    E3 --> J[JavaScript]
-
-    E4 --> S[CSS]
-```
+![Figura 1 - Flujo de Dependencias](evidencias/arquitectura/Diagrama_flujo_carpetas.png)
 
 ## Relación entre carpetas
 
