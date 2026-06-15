@@ -149,7 +149,7 @@ Contiene toda la interfaz de usuario y la lógica del cliente.
 
 ## Diagrama de flujo de carpetas
 
-docs/evidencias/arquitectura/Flujo_1.1.png
+![Figura 1 - Flujo de Dependencias](evidencias/arquitectura/Flujo_1.1.png)
 
 ## Relación entre carpetas
 
