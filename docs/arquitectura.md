@@ -62,7 +62,6 @@ SmartWatt-Diagnostics/
 ├── main.py
 └── requirements.txt
 
-
 ## Descripción de cada carpeta
 
 ### Backend
