@@ -149,28 +149,7 @@ Contiene toda la interfaz de usuario y la lógica del cliente.
 
 ## Diagrama de flujo de carpetas
 
-```mermaid
-flowchart TD
-
-    A[main.py<br/>Punto de Entrada]
-    B[backend/app.py<br/>API Principal]
-
-    A --> B
-
-    C[Servicios<br/>auth_service.py<br/>consumo_service.py<br/>equipos_service.py<br/>incidencias_service.py<br/>reportes_service.py<br/>usuarios_service.py]
-
-    D[database.py<br/>Conexión a Base de Datos]
-
-    E[(energia.db)]
-
-    F[Frontend<br/>pages/<br/>scripts/<br/>styles/]
-
-    B --> C
-    B --> F
-
-    C <--> D
-    D <--> E
-```
+docs/evidencias/arquitectura/Flujo_1.1.png
 
 ## Relación entre carpetas
 
