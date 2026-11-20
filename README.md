@@ -168,8 +168,10 @@ Proyecto desarrollado por:
 
 - Diego Martínez Morales  
 - Vianey Guerrero Reyes  
-- Luis Jaziel Basilio Cruz 
-- Andy Najai Vazquez Garcia
+- José de Jesús Berman Islas 
+- Miguel Alejandro Damian Bumas
+- Yadid Asiel Soto Hernandez 
+
 
 ---
 
