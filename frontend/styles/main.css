@@ -25,7 +25,11 @@
   --fuente:         'Segoe UI', 'Inter', Arial, sans-serif;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
   font-family: var(--fuente);
@@ -35,6 +39,7 @@ body {
 }
 
 /* ── NAVEGACIÓN LATERAL ────────────────────────── */
+
 .sidebar {
   width: 240px;
   min-height: 100vh;
@@ -43,7 +48,8 @@ body {
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   z-index: 100;
 }
 
@@ -66,7 +72,10 @@ body {
   margin-top: 4px;
 }
 
-.sidebar-nav { flex: 1; padding: 16px 0; }
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 0;
+}
 
 .nav-item {
   display: flex;
@@ -87,9 +96,12 @@ body {
   border-left-color: var(--verde-energia);
 }
 
-.nav-icon { font-size: 16px; }
+.nav-icon {
+  font-size: 16px;
+}
 
 /* ── CONTENIDO PRINCIPAL ───────────────────────── */
+
 .main-content {
   margin-left: 240px;
   padding: 24px;
@@ -115,7 +127,8 @@ body {
   margin-top: 2px;
 }
 
-/* ── TARJETAS DE INDICADORES (KPI Cards) ─────── */
+/* ── TARJETAS DE INDICADORES ───────────────────── */
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -135,14 +148,27 @@ body {
 .kpi-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 3px;
 }
 
-.kpi-card.verde::before  { background: var(--verde-energia); }
-.kpi-card.azul::before   { background: var(--azul-medio); }
-.kpi-card.amarillo::before { background: var(--amarillo); }
-.kpi-card.rojo::before   { background: var(--rojo); }
+.kpi-card.verde::before {
+  background: var(--verde-energia);
+}
+
+.kpi-card.azul::before {
+  background: var(--azul-medio);
+}
+
+.kpi-card.amarillo::before {
+  background: var(--amarillo);
+}
+
+.kpi-card.rojo::before {
+  background: var(--rojo);
+}
 
 .kpi-label {
   font-size: 11px;
@@ -174,6 +200,7 @@ body {
 }
 
 /* ── TARJETAS DE CONTENIDO ───────────────────── */
+
 .card {
   background: var(--blanco);
   border-radius: 12px;
@@ -192,14 +219,16 @@ body {
 }
 
 /* ── TABLA MODERNA ───────────────────────────── */
+
 .tabla-moderna {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
-  table-layout: fixed; 
+  table-layout: auto;
 }
 
 /* Encabezados */
+
 .tabla-moderna th {
   text-align: left;
   padding: 10px 14px;
@@ -211,28 +240,36 @@ body {
   background: #F9FAFB;
   border-bottom: 1px solid #E5E7EB;
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* Permite que los encabezados se adapten */
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 /* Celdas */
+
 .tabla-moderna td {
   padding: 12px 14px;
   border-bottom: 1px solid #F3F4F6;
   color: var(--gris-oscuro);
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* Evita cortar el contenido */
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+
+  /* Alineación */
+  vertical-align: top;
 }
 
 /* Hover */
+
 .tabla-moderna tr:hover td {
   background: #F9FAFB;
 }
 
-/* ───── UTILIDADES QUE TE FALTABAN ───── */
+/* ── UTILIDADES ───────────────────────────────── */
+
 .text-right {
   text-align: right;
 }
@@ -249,34 +286,8 @@ body {
   font-family: monospace;
 }
 
-/* ───── ANCHOS (para que no se desacomode) ───── */
-.tabla-moderna th:nth-child(1),
-.tabla-moderna td:nth-child(1) {
-  width: 50px;
-}
-
-.tabla-moderna th:nth-child(2),
-.tabla-moderna td:nth-child(2) {
-  width: 180px;
-}
-
-.tabla-moderna th:nth-child(3),
-.tabla-moderna td:nth-child(3),
-.tabla-moderna th:nth-child(4),
-.tabla-moderna td:nth-child(4),
-.tabla-moderna th:nth-child(5),
-.tabla-moderna td:nth-child(5),
-.tabla-moderna th:nth-child(6),
-.tabla-moderna td:nth-child(6) {
-  width: 120px;
-}
-
-.tabla-moderna th:nth-child(7),
-.tabla-moderna td:nth-child(7) {
-  width: 160px;
-}
-
 /* ── BADGES DE ESTADO ────────────────────────── */
+
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -285,13 +296,33 @@ body {
   font-weight: 600;
 }
 
-.badge-verde    { background: #DCFCE7; color: #166534; }
-.badge-amarillo { background: #FEF9C3; color: #854D0E; }
-.badge-rojo     { background: #FEE2E2; color: #991B1B; }
-.badge-gris     { background: #F3F4F6; color: #374151; }
-.badge-azul     { background: #DBEAFE; color: #1E40AF; }
+.badge-verde {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.badge-amarillo {
+  background: #FEF9C3;
+  color: #854D0E;
+}
+
+.badge-rojo {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.badge-gris {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.badge-azul {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
 
 /* ── BOTONES ─────────────────────────────────── */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -310,28 +341,41 @@ body {
   background: var(--azul-medio);
   color: var(--blanco);
 }
-.btn-primario:hover { background: #1a4f96; }
+
+.btn-primario:hover {
+  background: #1a4f96;
+}
 
 .btn-verde {
   background: var(--verde-energia);
   color: var(--blanco);
 }
-.btn-verde:hover { background: #16a34a; }
+
+.btn-verde:hover {
+  background: #16a34a;
+}
 
 .btn-rojo {
   background: var(--rojo);
   color: var(--blanco);
 }
-.btn-rojo:hover { background: #dc2626; }
+
+.btn-rojo:hover {
+  background: #dc2626;
+}
 
 .btn-outline {
   background: transparent;
   border: 1px solid #D1D5DB;
   color: var(--gris-oscuro);
 }
-.btn-outline:hover { background: #F9FAFB; }
+
+.btn-outline:hover {
+  background: #F9FAFB;
+}
 
 /* ── FORMULARIOS ─────────────────────────────── */
+
 .form-group {
   margin-bottom: 16px;
 }
@@ -365,6 +409,7 @@ body {
 }
 
 /* ── ALERTA DE ESTADO ────────────────────────── */
+
 .alerta {
   padding: 12px 16px;
   border-radius: 8px;
@@ -372,18 +417,38 @@ body {
   margin-bottom: 16px;
   display: none;
 }
-.alerta.visible { display: block; }
-.alerta-error   { background: #FEE2E2; color: #991B1B; }
-.alerta-exito   { background: #DCFCE7; color: #166534; }
-.alerta-warning { background: #FEF9C3; color: #854D0E; }
+
+.alerta.visible {
+  display: block;
+}
+
+.alerta-error {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.alerta-exito {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.alerta-warning {
+  background: #FEF9C3;
+  color: #854D0E;
+}
 
 /* ── PANTALLA LOGIN ──────────────────────────── */
+
 .login-wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--azul-oscuro) 0%, #1a3560 100%);
+  background: linear-gradient(
+    135deg,
+    var(--azul-oscuro) 0%,
+    #1a3560 100%
+  );
 }
 
 .login-card {
@@ -421,23 +486,36 @@ body {
   margin-top: 4px;
 }
 
-
-
 /* ── INDICADOR SEMÁFORO ──────────────────────── */
+
 .semaforo {
-  width: 12px; height: 12px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   display: inline-block;
 }
-.semaforo-verde    { background: var(--verde-energia); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
-.semaforo-amarillo { background: var(--amarillo); box-shadow: 0 0 6px rgba(250,204,21,0.5); }
-.semaforo-rojo     { background: var(--rojo); box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+
+.semaforo-verde {
+  background: var(--verde-energia);
+  box-shadow: 0 0 6px rgba(34,197,94,0.5);
+}
+
+.semaforo-amarillo {
+  background: var(--amarillo);
+  box-shadow: 0 0 6px rgba(250,204,21,0.5);
+}
+
+.semaforo-rojo {
+  background: var(--rojo);
+  box-shadow: 0 0 6px rgba(239,68,68,0.5);
+}
 
 /* =================================================
    DISEÑO RESPONSIVE — TABLET Y MOVIL
    ================================================= */
 
-/* Tablets */
+/* ── TABLETS ──────────────────────────────────── */
+
 @media (max-width: 900px) {
 
   .sidebar {
@@ -458,8 +536,8 @@ body {
   }
 }
 
+/* ── CELULARES ───────────────────────────────── */
 
-/* Celulares */
 @media (max-width: 600px) {
 
   body {
@@ -510,7 +588,6 @@ body {
     font-size: 14px;
   }
 
-
   /* ── CONTENIDO ───────────────────────────── */
 
   .main-content {
@@ -518,7 +595,6 @@ body {
     padding: 16px;
     min-height: auto;
   }
-
 
   /* ── ENCABEZADO ──────────────────────────── */
 
@@ -537,7 +613,6 @@ body {
     font-size: 12px;
   }
 
-
   /* ── KPIs ────────────────────────────────── */
 
   .kpi-grid {
@@ -554,30 +629,36 @@ body {
     font-size: 28px;
   }
 
-
   /* ── TARJETAS ────────────────────────────── */
 
   .card {
     padding: 16px;
     border-radius: 10px;
-    overflow: hidden;
+    overflow-x: auto;
   }
 
   .card-titulo {
     font-size: 14px;
   }
 
-
   /* ── TABLAS ──────────────────────────────── */
+
+  /*
+     Las tablas grandes mantienen un ancho mínimo
+     para evitar que las columnas se aplasten.
+     El usuario puede desplazarse horizontalmente.
+  */
 
   .tabla-moderna {
     min-width: 700px;
   }
 
-  .card:has(.tabla-moderna) {
-    overflow-x: auto;
+  .tabla-moderna th,
+  .tabla-moderna td {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
   }
-
 
   /* ── BOTONES ─────────────────────────────── */
 
@@ -585,7 +666,6 @@ body {
     min-height: 42px;
     padding: 9px 14px;
   }
-
 
   /* ── FORMULARIOS ─────────────────────────── */
 
@@ -597,7 +677,6 @@ body {
     min-height: 42px;
     font-size: 16px;
   }
-
 
   /* ── LOGIN ───────────────────────────────── */
 
@@ -616,7 +695,6 @@ body {
     height: 110px;
   }
 
-
   /* ── BADGES ──────────────────────────────── */
 
   .badge {
@@ -625,8 +703,8 @@ body {
   }
 }
 
+/* ── CELULARES PEQUEÑOS ─────────────────────── */
 
-/* Celulares pequeños */
 @media (max-width: 380px) {
 
   .main-content {
