@@ -1,30 +1,53 @@
 // ─────────────────────────────────────────────
 //  Verificar sesión
 // ─────────────────────────────────────────────
-function verificarSesion() {
-  const usuarioId = localStorage.getItem('usuario_id');
+async function verificarSesion() {
+    try {
+        const respuesta = await fetch('/api/session');
 
-  if (!usuarioId) {
-    window.location.href = '/pages/login.html';
-  }
+        if (!respuesta.ok) {
+            window.location.href = '/pages/login.html';
+            return null;
+        }
+
+        const datos = await respuesta.json();
+
+        return datos;
+    } catch (error) {
+        console.error('Error al verificar la sesión:', error);
+        window.location.href = '/pages/login.html';
+        return null;
+    }
 }
 
 // ─────────────────────────────────────────────
 //  Mostrar nombre del usuario
 // ─────────────────────────────────────────────
-function mostrarNombreUsuario() {
-  const nombre = localStorage.getItem('usuario_nombre') || '';
-  const el = document.getElementById('usuarioNombre');
+async function mostrarNombreUsuario() {
+  try {
+    const respuesta = await fetch('/api/session');
 
-  if (el && nombre) {
-    el.textContent = nombre;
+    if (!respuesta.ok) {
+      return;
+    }
+
+    const datos = await respuesta.json();
+
+    const el = document.getElementById('usuarioNombre');
+
+    if (el && datos.autenticado) {
+      el.textContent = datos.nombre || '';
+    }
+
+  } catch (error) {
+    console.error('Error al obtener el nombre del usuario:', error);
   }
 }
 
 // ─────────────────────────────────────────────
 //  Sidebar (activo + nombre)
 // ─────────────────────────────────────────────
-function initSidebar(paginaActiva) {
+async function initSidebar(paginaActiva) {
 
   // Marcar opción activa
   document.querySelectorAll('.nav-item').forEach(link => {
@@ -36,18 +59,22 @@ function initSidebar(paginaActiva) {
   });
 
   // Mostrar nombre
-  mostrarNombreUsuario();
+  await mostrarNombreUsuario();
 }
 
 // ─────────────────────────────────────────────
 //  Cerrar sesión
 // ─────────────────────────────────────────────
-function cerrarSesion() {
-  localStorage.removeItem('usuario_id');
-  localStorage.removeItem('usuario_nombre');
-  localStorage.removeItem('usuario_rol');
+async function cerrarSesion() {
+    try {
+        await fetch('/api/logout', {
+            method: 'POST'
+        });
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+    }
 
-  window.location.href = '/pages/login.html';
+    window.location.href = '/';
 }
 
 // ─────────────────────────────────────────────
@@ -88,10 +115,61 @@ function formatNum(num, decimales = 2) {
 function formatFecha(fecha) {
   if (!fecha) return '—';
 
-  return new Date(fecha.replace(' ', 'T'))
-    .toLocaleString('es-MX');
-}
+  try {
+    const fechaTexto = String(fecha).trim();
 
+    // Formato enviado por Flask:
+    // "Sat, 16 May 2026 23:13:51 GMT"
+    const partes = fechaTexto.match(
+      /^[A-Za-z]{3}, (\d{2}) ([A-Za-z]{3}) (\d{4})/
+    );
+
+    if (partes) {
+      const meses = {
+        Jan: 0,
+        Feb: 1,
+        Mar: 2,
+        Apr: 3,
+        May: 4,
+        Jun: 5,
+        Jul: 6,
+        Aug: 7,
+        Sep: 8,
+        Oct: 9,
+        Nov: 10,
+        Dec: 11
+      };
+
+      const dia = parseInt(partes[1], 10);
+      const mes = meses[partes[2]];
+      const año = parseInt(partes[3], 10);
+
+      if (mes === undefined) {
+        return 'Fecha inválida';
+      }
+
+      return `${String(dia).padStart(2, '0')}/${String(mes + 1).padStart(2, '0')}/${año}`;
+    }
+
+    // Intento normal para otros formatos de fecha.
+    const fechaObj = new Date(fechaTexto);
+
+    if (Number.isNaN(fechaObj.getTime())) {
+      console.warn('[Fecha] Fecha no válida:', fecha);
+      return 'Fecha inválida';
+    }
+
+    return fechaObj.toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+
+  } catch (error) {
+    console.error('[Fecha] Error al formatear:', fecha, error);
+    return 'Fecha inválida';
+  }
+}
 // ─────────────────────────────────────────────
 // Helpers visuales (BADGES)
 // ─────────────────────────────────────────────

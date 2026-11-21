@@ -20,7 +20,7 @@ def guardar_consumo(data):
     cursor.execute(
         '''INSERT INTO consumo_energetico
            (equipo_id, kwh_consumidos, voltaje, corriente, factor_potencia, tecnico_id)
-           VALUES (?,?,?,?,?,?)''',
+           VALUES (%s,%s,%s,%s,%s,%s)''',
         (data['equipo_id'], data['kwh_consumidos'],
          data.get('voltaje'), data.get('corriente'),
          data.get('factor_potencia'), data.get('tecnico_id'))
@@ -66,7 +66,7 @@ def obtener_consumo(equipo_id=None):
             FROM consumo_energetico c
             JOIN equipos e ON c.equipo_id = e.id
             LEFT JOIN usuarios u ON c.tecnico_id = u.id
-            WHERE c.equipo_id = ?
+            WHERE c.equipo_id = %s
             ORDER BY c.fecha_registro DESC
             LIMIT 200
         ''', (equipo_id,))
@@ -118,7 +118,7 @@ def obtener_resumen_dashboard():
     # Consulta el consumo energético total del mes actual.
     cursor.execute(
         "SELECT COALESCE(SUM(kwh_consumidos),0) as total FROM consumo_energetico "
-        "WHERE strftime('%Y-%m', fecha_registro) = strftime('%Y-%m', 'now')"
+        "WHERE DATE_TRUNC('month', fecha_registro) = DATE_TRUNC('month', CURRENT_TIMESTAMP)"
     )
 
     # Obtiene el valor total calculado.
@@ -159,7 +159,7 @@ def obtener_resumen_dashboard():
         SELECT e.nombre, COALESCE(SUM(c.kwh_consumidos), 0) as total_kwh
         FROM equipos e
         LEFT JOIN consumo_energetico c ON e.id = c.equipo_id
-        WHERE strftime('%Y-%m', c.fecha_registro) = strftime('%Y-%m', 'now')
+        WHERE DATE_TRUNC('month', c.fecha_registro) = DATE_TRUNC('month', CURRENT_TIMESTAMP)
            OR c.fecha_registro IS NULL
         GROUP BY e.id, e.nombre
         ORDER BY total_kwh DESC
@@ -175,10 +175,10 @@ def obtener_resumen_dashboard():
     # Obtiene la tendencia diaria del consumo durante los últimos siete días.
     cursor.execute('''
         SELECT 
-            DATE(fecha_registro) as fecha,
+            fecha_registro::date as fecha,
             SUM(kwh_consumidos) as total_kwh
         FROM consumo_energetico
-        WHERE fecha_registro >= DATE('now', '-7 days')
+        WHERE fecha_registro >= CURRENT_TIMESTAMP - INTERVAL '7 days'
         GROUP BY DATE(fecha_registro)
         ORDER BY fecha ASC
     ''')
@@ -252,7 +252,7 @@ def obtener_diagnostico_equipos():
         FROM equipos e
         LEFT JOIN consumo_energetico c 
             ON e.id = c.equipo_id 
-            AND c.fecha_registro >= DATETIME('now', '-48 hours')
+            AND c.fecha_registro >= CURRENT_TIMESTAMP - INTERVAL '48 hours'
         GROUP BY e.id, e.nombre, e.tipo, e.ubicacion, e.estado, e.potencia_kw
         ORDER BY e.nombre
     ''')

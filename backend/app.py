@@ -1,7 +1,7 @@
 # backend/app.py
 
 # Importaciones principales de Flask para crear la API y servir archivos del frontend
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, session
 import os
 import sys
 
@@ -33,7 +33,46 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, 'frontend'),
     template_folder=os.path.join(BASE_DIR, 'frontend', 'pages')
 )
+app.secret_key = os.environ.get("SECRET_KEY")
 
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+from functools import wraps
+def requiere_sesion(func):
+    @wraps(func)
+    def funcion_protegida(*args, **kwargs):
+        if "usuario_id" not in session:
+            return jsonify({
+                "exito": False,
+                "mensaje": "Sesión no iniciada"
+            }), 401
+
+        return func(*args, **kwargs)
+
+    return funcion_protegida
+
+def requiere_rol(*roles):
+    def decorador(func):
+        @wraps(func)
+        def funcion_protegida(*args, **kwargs):
+            if "usuario_id" not in session:
+                return jsonify({
+                    "exito": False,
+                    "mensaje": "Sesión no iniciada"
+                }), 401
+
+            if session.get("usuario_rol") not in roles:
+                return jsonify({
+                    "exito": False,
+                    "mensaje": "No tienes permisos para realizar esta acción"
+                }), 403
+
+            return func(*args, **kwargs)
+
+        return funcion_protegida
+
+    return decorador
 # ──────────────────────────────────────────────
 # RUTAS PARA SERVIR LAS PÁGINAS HTML
 # ──────────────────────────────────────────────
@@ -67,7 +106,8 @@ def styles(filename):
 def scripts(filename):
     return send_from_directory(
         os.path.join(BASE_DIR, 'frontend', 'scripts'),
-        filename
+        filename,
+        mimetype='application/javascript'
     )
 
 # Servir imágenes utilizadas por el sistema.
@@ -86,12 +126,47 @@ def images(filename):
 @app.route('/api/login', methods=['POST'])
 def login():
     from backend.services.auth_service import autenticar_usuario
+
     data = request.get_json()
-    resultado = autenticar_usuario(data.get('usuario'), data.get('contrasena'))
+
+    resultado = autenticar_usuario(
+        data.get('usuario'),
+        data.get('contrasena')
+    )
+
+    if resultado["exito"]:
+        session["usuario_id"] = resultado["id"]
+        session["usuario_nombre"] = resultado["nombre"]
+        session["usuario_rol"] = resultado["rol"]
+
     return jsonify(resultado)
+
+@app.route('/api/session', methods=['GET'])
+def obtener_sesion():
+    if "usuario_id" not in session:
+        return jsonify({
+            "autenticado": False
+        }), 401
+
+    return jsonify({
+        "autenticado": True,
+        "id": session["usuario_id"],
+        "nombre": session["usuario_nombre"],
+        "rol": session["usuario_rol"]
+    })
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    session.clear()
+
+    return jsonify({
+        "exito": True
+    })
 
 # Registro de nuevos usuarios.
 @app.route('/api/usuarios', methods=['POST'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def crear_usuario():
     from backend.services.usuarios_service import registrar_usuario
     data = request.get_json()
@@ -99,12 +174,15 @@ def crear_usuario():
 
 # Obtener todos los usuarios registrados.
 @app.route('/api/usuarios', methods=['GET'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def listar_usuarios():
     from backend.services.usuarios_service import obtener_usuarios
     return jsonify(obtener_usuarios())
 
 # Consultar todos los equipos existentes.
 @app.route('/api/equipos', methods=['GET'])
+@requiere_sesion
 def get_equipos():
     from backend.services.equipos_service import obtener_equipos
     equipos = obtener_equipos()
@@ -112,6 +190,8 @@ def get_equipos():
 
 # Crear un nuevo equipo dentro del sistema.
 @app.route('/api/equipos', methods=['POST'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def crear_equipo():
     from backend.services.equipos_service import registrar_equipo
     data = request.get_json()
@@ -120,6 +200,8 @@ def crear_equipo():
 
 # Actualizar el estado operativo de un equipo.
 @app.route('/api/equipos/<int:id>/estado', methods=['PATCH'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def cambiar_estado_equipo(id):
 
     from backend.services.equipos_service import actualizar_estado_equipo
@@ -133,14 +215,17 @@ def cambiar_estado_equipo(id):
 
 # Eliminación de equipos por identificador.
 @app.route('/api/equipos/<int:id>', methods=['DELETE'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def eliminar_equipo(id):
 
-    from backend.services.equipos_service import eliminar_equipo_service
+    from backend.services.equipos_service import eliminar_equipo as eliminar_equipo_service
 
     return jsonify(eliminar_equipo_service(id))
 
 # Consultar registros de consumo energético.
 @app.route('/api/consumo', methods=['GET'])
+@requiere_sesion
 def get_consumo():
 
     try:
@@ -163,12 +248,16 @@ def get_consumo():
 
 # Registrar un nuevo consumo energético.
 @app.route('/api/consumo', methods=['POST'])
+@requiere_sesion
 def registrar_consumo():
 
     from backend.database import get_connection
     from backend.services.consumo_service import guardar_consumo
 
     data = request.get_json()
+    # El ID del técnico se obtiene directamente de la sesión.
+    # No se confía en un valor enviado por el navegador.
+    data["tecnico_id"] = session["usuario_id"]
     equipo_id = data.get('equipo_id')
 
     conn = get_connection()
@@ -176,7 +265,7 @@ def registrar_consumo():
 
     # Verificar el estado actual del equipo antes de registrar consumo.
     cursor.execute("""
-        SELECT estado FROM equipos WHERE id = ?
+        SELECT estado FROM equipos WHERE id = %s
     """, (equipo_id,))
 
     equipo = cursor.fetchone()
@@ -202,6 +291,7 @@ def registrar_consumo():
 
 # Obtener todas las incidencias registradas.
 @app.route('/api/incidencias', methods=['GET'])
+@requiere_sesion
 def get_incidencias():
     from backend.services.incidencias_service import obtener_incidencias
     incidencias = obtener_incidencias()
@@ -209,12 +299,16 @@ def get_incidencias():
 
 # Crear una nueva incidencia asociada a un equipo.
 @app.route('/api/incidencias', methods=['POST'])
+@requiere_sesion
 def crear_incidencia():
 
     from backend.database import get_connection
     from backend.services.incidencias_service import registrar_incidencia
 
     data = request.get_json()
+    # El ID del técnico se obtiene directamente de la sesión.
+    # No se confía en un valor enviado por el navegador.
+    data["tecnico_id"] = session["usuario_id"]
     equipo_id = data.get('equipo_id')
 
     conn = get_connection()
@@ -222,7 +316,7 @@ def crear_incidencia():
 
     # Comprobar que el equipo exista antes de registrar la incidencia.
     cursor.execute("""
-        SELECT estado FROM equipos WHERE id = ?
+        SELECT estado FROM equipos WHERE id = %s
     """, (equipo_id,))
 
     equipo = cursor.fetchone()
@@ -247,6 +341,7 @@ def crear_incidencia():
 
 # Cambiar el estado de una incidencia y sincronizar el estado del equipo relacionado.
 @app.route('/api/incidencias/<int:id>/estado', methods=['PATCH'])
+@requiere_sesion
 def actualizar_estado_incidencia(id):
 
     from backend.database import get_connection
@@ -264,8 +359,8 @@ def actualizar_estado_incidencia(id):
         # ─────────────────────────────────────
         cursor.execute("""
             UPDATE incidencias
-            SET estado = ?
-            WHERE id = ?
+            SET estado = %s
+            WHERE id = %s
         """, (estado, id))
 
         # ─────────────────────────────────────
@@ -274,7 +369,7 @@ def actualizar_estado_incidencia(id):
         cursor.execute("""
             SELECT equipo_id
             FROM incidencias
-            WHERE id = ?
+            WHERE id = %s
         """, (id,))
 
         fila = cursor.fetchone()
@@ -290,7 +385,7 @@ def actualizar_estado_incidencia(id):
                 cursor.execute("""
                     UPDATE equipos
                     SET estado = 'mantenimiento'
-                    WHERE id = ?
+                    WHERE id = %s
                 """, (equipo_id,))
 
             elif estado == 'resuelta':
@@ -298,7 +393,7 @@ def actualizar_estado_incidencia(id):
                 cursor.execute("""
                     UPDATE equipos
                     SET estado = 'activo'
-                    WHERE id = ?
+                    WHERE id = %s
                 """, (equipo_id,))
 
         conn.commit()
@@ -321,6 +416,8 @@ def actualizar_estado_incidencia(id):
 
 # Obtener información resumida para el dashboard principal.
 @app.route('/api/dashboard/resumen', methods=['GET'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def get_resumen_dashboard():
     from backend.services.consumo_service import obtener_resumen_dashboard
     resumen = obtener_resumen_dashboard()
@@ -328,6 +425,8 @@ def get_resumen_dashboard():
 
 # Generar reporte de consumo filtrado por rango de fechas.
 @app.route('/api/reportes/consumo', methods=['GET'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def reporte_consumo():
     from backend.services.reportes_service import generar_reporte_consumo
 
@@ -347,6 +446,8 @@ def reporte_consumo():
 
 # Exportar el reporte de consumo en formato PDF.
 @app.route('/api/reportes/consumo/pdf', methods=['GET'])
+@requiere_sesion
+@requiere_rol("ingeniero")
 def reporte_consumo_pdf():
 
     from backend.services.reportes_service import generar_reporte_consumo
@@ -405,4 +506,4 @@ def reporte_consumo_pdf():
 
 # Punto de entrada principal de la aplicación.
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=False, port=5000)

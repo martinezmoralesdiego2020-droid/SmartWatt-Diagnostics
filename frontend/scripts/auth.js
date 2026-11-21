@@ -24,11 +24,6 @@ async function iniciarSesion() {
     const datos = await respuesta.json();
 
     if (datos.exito) {
-      // Guardar sesión en localStorage
-      localStorage.setItem('usuario_id',   datos.id);
-      localStorage.setItem('usuario_nombre', datos.nombre);
-      localStorage.setItem('usuario_rol',    datos.rol);
-
       // Redirigir según el rol
       if (datos.rol === 'ingeniero') {
         window.location.href = '/pages/dashboard.html';

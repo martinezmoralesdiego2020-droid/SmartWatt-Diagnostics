@@ -195,60 +195,81 @@
 
 
   // Ejecuta acciones iniciales cuando la página termina de cargar.
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
 
+    try {
 
-    // Verifica que exista un usuario autenticado antes de continuar.
-    if (!localStorage.getItem('usuario_id')) { window.location.href = '/'; return; }
+      // Consulta la sesión actual en el servidor.
+      const respuesta = await fetch('/api/session');
+      const sesion = await respuesta.json();
 
+      // Si no hay una sesión válida, regresar al login.
+      if (!respuesta.ok || !sesion.autenticado) {
+        window.location.href = '/';
+        return;
+      }
 
-    // Obtiene los datos del usuario almacenados en el navegador.
-    const nombre = localStorage.getItem('usuario_nombre') || '';
-    const rol    = localStorage.getItem('usuario_rol')    || '';
+      // Obtiene los datos directamente de la sesión Flask.
+      const nombre = sesion.nombre || '';
+      const rol = sesion.rol || '';
 
+      // Muestra el nombre del usuario.
+      document.getElementById('usuarioNombre').textContent = nombre;
 
-    // Muestra el nombre del usuario en la interfaz.
-    document.getElementById('usuarioNombre').textContent = nombre;
+      // Muestra el rol del usuario.
+      document.getElementById('rolLabel').textContent =
+        rol === 'ingeniero' ? 'Ingeniero' : 'Técnico de monitoreo';
 
+      // Obtiene el menú.
+      const nav = document.getElementById('navMenu');
 
-    // Actualiza la etiqueta del rol mostrado en la barra lateral.
-    document.getElementById('rolLabel').textContent =
-      rol === 'ingeniero' ? 'Ingeniero' : 'Técnico de monitoreo';
+      // Genera el menú según el rol.
+      if (rol === 'ingeniero') {
 
+        nav.innerHTML = `
+          <a href="/pages/dashboard.html" class="nav-item">
+            <span class="nav-icon">📊</span> Dashboard
+          </a>
+          <a href="/pages/equipos.html" class="nav-item">
+            <span class="nav-icon">⚙️</span> Equipos
+          </a>
+          <a href="/pages/monitoreo.html" class="nav-item">
+            <span class="nav-icon">📈</span> Monitoreo
+          </a>
+          <a href="/pages/diagnostico.html" class="nav-item">
+            <span class="nav-icon">🔍</span> Diagnóstico
+          </a>
+          <a href="/pages/reportes.html" class="nav-item">
+            <span class="nav-icon">📋</span> Reportes
+          </a>
+          <a href="/pages/consulta_equipos.html" class="nav-item activo">
+            <span class="nav-icon">🔎</span> Consulta equipos
+          </a>`;
 
+      } else {
 
-    // Obtiene el elemento donde se generará el menú de navegación.
-    const nav = document.getElementById('navMenu');
+        nav.innerHTML = `
+          <a href="/pages/registro_consumo.html" class="nav-item">
+            <span class="nav-icon">📝</span> Registro consumo
+          </a>
+          <a href="/pages/registro_incidencias.html" class="nav-item">
+            <span class="nav-icon">⚠️</span> Reportar incidencia
+          </a>
+          <a href="/pages/consulta_equipos.html" class="nav-item activo">
+            <span class="nav-icon">🔎</span> Consulta equipos
+          </a>`;
 
+      }
 
-    // Genera las opciones del menú según los permisos del usuario.
-    if (rol === 'ingeniero') {
+      // Carga los equipos.
+      cargarEquipos();
 
+    } catch (error) {
 
-      // Menú completo disponible para usuarios con rol de ingeniero.
-      nav.innerHTML = `
-        <a href="/pages/dashboard.html"       class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-        <a href="/pages/equipos.html"         class="nav-item"><span class="nav-icon">⚙️</span> Equipos</a>
-        <a href="/pages/monitoreo.html"       class="nav-item"><span class="nav-icon">📈</span> Monitoreo</a>
-        <a href="/pages/diagnostico.html"     class="nav-item"><span class="nav-icon">🔍</span> Diagnóstico</a>
-        <a href="/pages/reportes.html"        class="nav-item"><span class="nav-icon">📋</span> Reportes</a>
-        <a href="/pages/consulta_equipos.html" class="nav-item activo"><span class="nav-icon">🔎</span> Consulta equipos</a>`;
-
-
-    } else {
-
-
-      // Menú limitado para usuarios técnicos.
-      nav.innerHTML = `
-        <a href="/pages/registro_consumo.html"    class="nav-item"><span class="nav-icon">📝</span> Registro consumo</a>
-        <a href="/pages/registro_incidencias.html" class="nav-item"><span class="nav-icon">⚠️</span> Reportar incidencia</a>
-        <a href="/pages/consulta_equipos.html"    class="nav-item activo"><span class="nav-icon">🔎</span> Consulta equipos</a>`;
+      console.error('[Sesion] Error:', error);
+      window.location.href = '/';
 
     }
-
-
-    // Carga la información de los equipos registrados.
-    cargarEquipos();
 
   });
 
@@ -384,9 +405,12 @@
 
 
   // Finaliza la sesión eliminando los datos almacenados del usuario.
-  function cerrarSesion() {
+  async function cerrarSesion() {
 
-    localStorage.clear();
+    await fetch('/api/logout', {
+      method: 'POST'
+    });
+
     window.location.href = '/';
 
   }

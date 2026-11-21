@@ -432,3 +432,229 @@ body {
 .semaforo-verde    { background: var(--verde-energia); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
 .semaforo-amarillo { background: var(--amarillo); box-shadow: 0 0 6px rgba(250,204,21,0.5); }
 .semaforo-rojo     { background: var(--rojo); box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+
+/* =================================================
+   DISEÑO RESPONSIVE — TABLET Y MOVIL
+   ================================================= */
+
+/* Tablets */
+@media (max-width: 900px) {
+
+  .sidebar {
+    width: 200px;
+  }
+
+  .main-content {
+    margin-left: 200px;
+    padding: 20px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card {
+    padding: 20px;
+  }
+}
+
+
+/* Celulares */
+@media (max-width: 600px) {
+
+  body {
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────── */
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    min-height: auto;
+    height: auto;
+  }
+
+  .sidebar-logo {
+    padding: 16px;
+  }
+
+  .sidebar-logo h2 {
+    font-size: 13px;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .nav-item {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 11px;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    gap: 5px;
+  }
+
+  .nav-item:hover,
+  .nav-item.activo {
+    border-left-color: transparent;
+    border-bottom-color: var(--verde-energia);
+  }
+
+  .nav-icon {
+    font-size: 14px;
+  }
+
+
+  /* ── CONTENIDO ───────────────────────────── */
+
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+    min-height: auto;
+  }
+
+
+  /* ── ENCABEZADO ──────────────────────────── */
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+  }
+
+
+  /* ── KPIs ────────────────────────────────── */
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    padding: 16px;
+  }
+
+  .kpi-valor {
+    font-size: 28px;
+  }
+
+
+  /* ── TARJETAS ────────────────────────────── */
+
+  .card {
+    padding: 16px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .card-titulo {
+    font-size: 14px;
+  }
+
+
+  /* ── TABLAS ──────────────────────────────── */
+
+  .tabla-moderna {
+    min-width: 700px;
+  }
+
+  .card:has(.tabla-moderna) {
+    overflow-x: auto;
+  }
+
+
+  /* ── BOTONES ─────────────────────────────── */
+
+  .btn {
+    min-height: 42px;
+    padding: 9px 14px;
+  }
+
+
+  /* ── FORMULARIOS ─────────────────────────── */
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-control {
+    min-height: 42px;
+    font-size: 16px;
+  }
+
+
+  /* ── LOGIN ───────────────────────────────── */
+
+  .login-wrapper {
+    padding: 16px;
+  }
+
+  .login-card {
+    padding: 28px 20px;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .logo-img {
+    width: 110px;
+    height: 110px;
+  }
+
+
+  /* ── BADGES ──────────────────────────────── */
+
+  .badge {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+
+
+/* Celulares pequeños */
+@media (max-width: 380px) {
+
+  .main-content {
+    padding: 12px;
+  }
+
+  .sidebar-nav {
+    padding: 6px;
+  }
+
+  .nav-item {
+    font-size: 10px;
+    padding: 8px 5px;
+  }
+
+  .nav-icon {
+    font-size: 13px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .login-card {
+    padding: 24px 16px;
+  }
+}

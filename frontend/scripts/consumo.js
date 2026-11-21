@@ -505,8 +505,6 @@ async function registrarConsumo() {
 
   const kwh = parseFloat(document.getElementById('nuevo-kwh').value);
 
-  const tecnicoId = parseInt(localStorage.getItem('usuario_id')) || null;
-
 
 
   // Valida los datos obligatorios.
@@ -533,7 +531,6 @@ async function registrarConsumo() {
       body: JSON.stringify({
         equipo_id: equipoId,
         kwh_consumidos: kwh,
-        tecnico_id: tecnicoId
       })
 
     });
