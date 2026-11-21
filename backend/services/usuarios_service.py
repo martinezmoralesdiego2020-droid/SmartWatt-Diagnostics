@@ -1,4 +1,6 @@
 from ..database import get_connection
+from werkzeug.security import generate_password_hash
+
 
 def registrar_usuario(data):
     conn = get_connection()
@@ -6,10 +8,8 @@ def registrar_usuario(data):
 
     try:
 
-        # Verificar si ya existe una cuenta con el mismo nombre de usuario
-        # para evitar registros duplicados dentro del sistema.
         cursor.execute(
-            "SELECT id FROM usuarios WHERE usuario = ?",
+            "SELECT id FROM usuarios WHERE usuario = %s",
             (data['usuario'],)
         )
 
@@ -21,14 +21,18 @@ def registrar_usuario(data):
                 "mensaje": "El usuario ya existe"
             }
 
-        # Registrar el nuevo usuario utilizando la información recibida.
+        # Convertir la contraseña en un hash antes de almacenarla.
+        contrasena_hash = generate_password_hash(
+            data['contrasena']
+        )
+
         cursor.execute("""
             INSERT INTO usuarios (nombre, usuario, contrasena, rol)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
         """, (
             data['nombre'],
             data['usuario'],
-            data['contrasena'],
+            contrasena_hash,
             data['rol']
         ))
 
@@ -41,15 +45,12 @@ def registrar_usuario(data):
 
     except Exception as e:
 
-        # Retornar el error para facilitar la detección de problemas
-        # durante el proceso de registro.
         return {
             "exito": False,
-            "mensaje": str(e)
+            "mensaje": "No se pudo registrar el usuario"
         }
 
     finally:
-        # Asegurar el cierre de la conexión independientemente del resultado.
         conn.close()
 
 
@@ -58,8 +59,6 @@ def obtener_usuarios():
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Recuperar únicamente los datos necesarios para mostrar
-    # la información de los usuarios en la interfaz.
     cursor.execute("""
         SELECT id, nombre, usuario, rol
         FROM usuarios
@@ -69,6 +68,4 @@ def obtener_usuarios():
 
     conn.close()
 
-    # Convertir cada registro a diccionario para facilitar
-    # su serialización en formato JSON.
     return [dict(f) for f in filas]

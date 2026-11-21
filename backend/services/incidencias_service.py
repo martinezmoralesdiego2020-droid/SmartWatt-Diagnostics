@@ -21,7 +21,7 @@ def registrar_incidencia(data):
     cursor.execute(
         '''INSERT INTO incidencias
            (equipo_id, descripcion, severidad, tecnico_id)
-           VALUES (?,?,?,?)''',
+           VALUES (%s,%s,%s,%s)''',
         (data['equipo_id'], data['descripcion'],
          data['severidad'], data.get('tecnico_id'))
     )

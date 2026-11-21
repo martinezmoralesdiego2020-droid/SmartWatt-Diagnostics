@@ -221,32 +221,38 @@
 
 
     // Ejecuta las acciones iniciales cuando la página termina de cargar.
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
+  try {
 
-      // Verifica que exista un usuario autenticado.
-      if (!localStorage.getItem('usuario_id')) {
+    const respuesta = await fetch('/api/session');
+    const sesion = await respuesta.json();
 
-        // Redirige al inicio de sesión si no existe una sesión activa.
-        window.location.href = '/';
+    if (!respuesta.ok || !sesion.autenticado) {
+      window.location.href = '/';
+      return;
+    }
 
-        return;
+    // Verificar que realmente sea un técnico
+    if (sesion.rol !== 'tecnico') {
+      window.location.href = '/';
+      return;
+    }
 
-      }
+    // Mostrar nombre del usuario conectado
+    document.getElementById('usuarioNombre').textContent =
+      sesion.nombre || '';
 
+    cargarEquipos();
 
+  } catch (error) {
 
-      // Muestra el nombre del usuario conectado.
-      document.getElementById('usuarioNombre').textContent =
-        localStorage.getItem('usuario_nombre') || '';
+    console.error('[Sesion] Error:', error);
+    window.location.href = '/';
 
+  }
 
-
-      // Obtiene la lista de equipos disponibles.
-      cargarEquipos();
-
-
-    });
+});
 
 
 
@@ -347,7 +353,6 @@
 
             factor_potencia: parseFloat(fp) || null,
 
-            tecnico_id: parseInt(localStorage.getItem('usuario_id'))
 
           })
 
@@ -447,16 +452,13 @@
 
 
     // Cierra la sesión del usuario actual.
-    function cerrarSesion() {
+    async function cerrarSesion() {
 
+      await fetch('/api/logout', {
+        method: 'POST'
+      });
 
-      // Elimina los datos almacenados de la sesión.
-      localStorage.clear();
-
-
-      // Redirige a la página inicial.
       window.location.href = '/';
-
 
     }
 

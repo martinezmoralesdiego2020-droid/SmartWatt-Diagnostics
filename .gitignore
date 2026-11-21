@@ -1,6 +1,43 @@
+# Entornos virtuales
+.venv/
+.venv-kali/
 venv/
+env/
+
+# Python
 __pycache__/
-*.pyc
-dist/
+*.py[cod]
+*.pyo
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Cookies y sesiones
+cookies.txt
+cookies-ingeniero.txt
+
+# Bases de datos locales
+database/energia.db
+
+# Resultados de herramientas de seguridad
+resultado-*/
+skipfish-*/
+
+# Archivos de IDE
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos temporales
+*.tmp
+*.log
+
+# Builds / ejecutables
 build/
+dist/
 *.spec

@@ -84,12 +84,37 @@
   </main>
   <script src="/scripts/utils.js"></script>
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    if (!localStorage.getItem('usuario_id')) { window.location.href = '/'; return; }
-    document.getElementById('usuarioNombre').textContent =
-      localStorage.getItem('usuario_nombre') || '';
-    cargarEquiposSelect();
-  });
+    document.addEventListener('DOMContentLoaded', async () => {
+
+      try {
+
+        const respuesta = await fetch('/api/session');
+        const sesion = await respuesta.json();
+
+        if (!respuesta.ok || !sesion.autenticado) {
+          window.location.href = '/';
+          return;
+        }
+
+        // Verificar que realmente sea un técnico
+        if (sesion.rol !== 'tecnico') {
+          window.location.href = '/';
+          return;
+        }
+
+        document.getElementById('usuarioNombre').textContent =
+          sesion.nombre || '';
+
+        cargarEquiposSelect();
+
+      } catch (error) {
+
+        console.error('[Sesion] Error:', error);
+        window.location.href = '/';
+
+      }
+
+    });
 
   async function cargarEquiposSelect() {
     try {
@@ -121,7 +146,6 @@
         equipo_id: parseInt(equipoId),
         severidad,
         descripcion,
-        tecnico_id: parseInt(localStorage.getItem('usuario_id'))
       })
     });
 
@@ -154,9 +178,14 @@
     setTimeout(() => div.classList.remove('visible'), 4500);
   }
 
-  function cerrarSesion() {
-    localStorage.clear();
+  async function cerrarSesion() {
+
+    await fetch('/api/logout', {
+      method: 'POST'
+    });
+
     window.location.href = '/';
+
   }
   </script>
 </body>

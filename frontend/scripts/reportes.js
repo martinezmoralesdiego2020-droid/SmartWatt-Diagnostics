@@ -88,36 +88,61 @@ function renderizarTabla(datos) {
   }
 
   datos.forEach(fila => {
+    const totalKwh = Number(fila.total_kwh) || 0;
+    const promedioKwh = Number(fila.promedio_kwh) || 0;
+    const maxKwh = Number(fila.max_kwh) || 0;
+    const registros = Number(fila.registros) || 0;
+
     const tr = document.createElement('tr');
+
     tr.innerHTML = `
       <td>${fila.equipo || '—'}</td>
       <td>${fila.tipo || '—'}</td>
       <td>${fila.ubicacion || '—'}</td>
-      <td style="text-align:center;">${fila.registros ?? 0}</td>
+      <td style="text-align:center;">${registros}</td>
       <td style="text-align:right; font-weight:600;">
-        ${fila.total_kwh?.toFixed(2) || '0.00'}
+        ${totalKwh.toFixed(2)}
       </td>
       <td style="text-align:right;">
-        ${fila.promedio_kwh?.toFixed(2) || '0.00'}
+        ${promedioKwh.toFixed(2)}
       </td>
       <td style="text-align:right;">
-        ${fila.max_kwh?.toFixed(2) || '0.00'}
+        ${maxKwh.toFixed(2)}
       </td>
     `;
+
     tbody.appendChild(tr);
   });
 }
 
 // ── Resumen ─────────────────────────────────────────────────
-function actualizarResumen(datos) {
-  const totalKwh = datos.reduce((s, f) => s + (f.total_kwh || 0), 0);
-  const totalRegistros = datos.reduce((s, f) => s + (f.registros || 0), 0);
-  const equipos = datos.filter(f => (f.registros || 0) > 0).length;
 
-  document.getElementById('resumenTotalKwh').textContent = totalKwh.toFixed(2);
-  document.getElementById('resumenRegistros').textContent = totalRegistros;
-  document.getElementById('resumenEquiposActivos').textContent = equipos;
+function actualizarResumen(datos) {
+  const totalKwh = datos.reduce(
+    (s, f) => s + (Number(f.total_kwh) || 0),
+    0
+  );
+
+  const totalRegistros = datos.reduce(
+    (s, f) => s + (Number(f.registros) || 0),
+    0
+  );
+
+  const equipos = datos.filter(
+    f => (Number(f.registros) || 0) > 0
+  ).length;
+
+  document.getElementById('resumenTotalKwh').textContent =
+    totalKwh.toFixed(2);
+
+  document.getElementById('resumenRegistros').textContent =
+    totalRegistros;
+
+  document.getElementById('resumenEquiposActivos').textContent =
+    equipos;
 }
+
+
 
 // ── Exportar PDF ────────────────────────────────────────────
 function exportarPDF() {
