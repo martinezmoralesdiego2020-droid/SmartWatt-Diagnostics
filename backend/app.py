@@ -165,8 +165,6 @@ def logout():
 
 # Registro de nuevos usuarios.
 @app.route('/api/usuarios', methods=['POST'])
-@requiere_sesion
-@requiere_rol("ingeniero")
 def crear_usuario():
     from backend.services.usuarios_service import registrar_usuario
     data = request.get_json()
