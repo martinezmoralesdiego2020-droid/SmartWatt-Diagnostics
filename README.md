@@ -60,14 +60,15 @@ Desarrollar una plataforma que permita registrar, monitorear y analizar informac
 |---|---|
 | Python | Backend |
 | Flask | Servidor |
-| SQLite | Base de datos |
+| PostgreSQL | Base de datos |
 | HTML | Interfaz |
 | CSS | Diseño |
 | JavaScript | Funcionalidad |
 | ReportLab | Reportes PDF |
 | GitHub | Control de versiones |
 | Ubuntu WSL2 | Entorno |
-
+| Neon | Alojamiento de la base de datos en la nube |
+| Waitress | WSGI local |
 ---
 
 ## Requisitos del sistema
@@ -88,7 +89,7 @@ Desarrollar una plataforma que permita registrar, monitorear y analizar informac
 | Sistema operativo | Windows 10/11 o Ubuntu |
 | Python | 3.14 o superior |
 | Flask | 3.0.0 |
-| SQLite | Integrado |
+| PostgreSQL | Integrado |
 | Git | Última versión |
 | Visual Studio Code | Recomendado |
 | Navegador | Chrome, Edge o Firefox |
